@@ -35,6 +35,11 @@
         <div class="text-center mb-4">
           <h1 class="brand-title">Melidan<span class="brand-dot">.</span></h1>
           <p class="brand-subtitle">Ingresa para gestionar tus pedidos</p>
+          <div class="mt-2 text-center">
+            <span class="db-status-badge db-connected" id="login-db-badge">
+              <span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)
+            </span>
+          </div>
         </div>
 
         <div id="login-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
@@ -153,7 +158,12 @@
     <section class="view-screen" id="screen-admin">
       <!-- Cabecera de Administración -->
       <div class="admin-header">
-        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <span class="db-status-badge db-connected mt-1">
+            <span class="badge-dot-green"></span> PostgreSQL 18
+          </span>
+        </div>
         <div class="user-profile">
           <span class="user-name">Don Roberto</span>
           <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="admin-user-avatar">

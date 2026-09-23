@@ -1,13 +1,14 @@
 /**
  * auth.js - Servicio de Autenticación y Sesiones de Melidan
- * Conectado a la base de datos simulada (MelidanDB).
+ * Conectado a la Base de Datos PostgreSQL 18 (melidan_db).
  */
 
 class AuthService {
   static SESSION_KEY = 'melidan_auth_user';
+  static API_URL = 'api/auth.php';
 
   /**
-   * Valida credenciales e inicia sesión
+   * Valida credenciales e inicia sesión contra PostgreSQL
    * @param {string} email
    * @param {string} password
    */
@@ -16,18 +17,46 @@ class AuthService {
     if (!cleanEmail) throw new Error('Ingresa un correo electrónico.');
     if (!password) throw new Error('Ingresa tu contraseña.');
 
+    // 1. Intentar autenticar contra PostgreSQL
+    if (window.db && window.db.isPostgresConnected) {
+      try {
+        const response = await fetch(`${this.API_URL}?action=login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, password: password })
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Error de autenticación');
+        }
+
+        // Guardar sesión activa obtenida desde PostgreSQL
+        const sessionUser = result.user;
+        localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionUser));
+        return sessionUser;
+      } catch (err) {
+        // Si fue un error de credenciales incorrectas, propagarlo de inmediato
+        if (err.message.includes('incorrecta') || err.message.includes('encontrado') || err.message.includes('inactiva')) {
+          throw err;
+        }
+        console.warn('[AuthService] Fallo conexión a API de PostgreSQL, intentando modo local:', err);
+      }
+    }
+
+    // 2. Fallback a LocalStorage si el servidor no responde
     const user = await window.db.findOne('users', { email: cleanEmail });
     if (!user || user.password !== password) {
       throw new Error('Credenciales incorrectas. Verifica correo o contraseña.');
     }
 
-    // Guardar sesión activa
     const sessionUser = {
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
-      avatar: user.avatar
+      avatar: user.avatar,
+      source: 'local_storage'
     };
     localStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionUser));
     return sessionUser;
@@ -53,11 +82,32 @@ class AuthService {
   }
 
   /**
-   * Envía código de verificación de 6 dígitos
+   * Envía código de verificación de 6 dígitos (guardado en PostgreSQL)
    * @param {string} email
    */
   static async sendOtpCode(email) {
     const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail) throw new Error('Ingresa un correo electrónico.');
+
+    if (window.db && window.db.isPostgresConnected) {
+      try {
+        const response = await fetch(`${this.API_URL}?action=request_reset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Error solicitando código');
+        }
+        return { code: result.code, message: result.message };
+      } catch (err) {
+        if (err.message.includes('No existe') || err.message.includes('correo')) throw err;
+        console.warn('[AuthService] Fallback local para recuperación');
+      }
+    }
+
+    // Fallback local
     const user = await window.db.findOne('users', { email: cleanEmail });
     if (!user) throw new Error('El correo no se encuentra registrado en el sistema.');
 
@@ -70,13 +120,32 @@ class AuthService {
   }
 
   /**
-   * Valida código de 6 dígitos
+   * Valida código de 6 dígitos contra PostgreSQL
    */
   static async verifyOtp(email, code) {
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanCode = (code || '').replace(/[^0-9]/g, '');
-    const resets = window.db.get('password_resets', []);
 
+    if (window.db && window.db.isPostgresConnected) {
+      try {
+        const response = await fetch(`${this.API_URL}?action=verify_code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, code: cleanCode })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Código incorrecto o expirado');
+        }
+        return true;
+      } catch (err) {
+        if (err.message.includes('inválido') || err.message.includes('expirado')) throw err;
+        console.warn('[AuthService] Fallback local para verifyOtp');
+      }
+    }
+
+    // Fallback local
+    const resets = window.db.get('password_resets', []);
     const match = resets.find(r => r.email === cleanEmail && r.code === cleanCode && r.expires > Date.now());
     if (!match) {
       throw new Error('Código de verificación incorrecto o expirado.');
@@ -85,7 +154,7 @@ class AuthService {
   }
 
   /**
-   * Cambia la contraseña tras verificar el código
+   * Cambia la contraseña tras verificar el código en PostgreSQL
    */
   static async resetPassword(email, code, newPassword, confirmPassword) {
     if (!newPassword || newPassword.length < 6) {
@@ -95,16 +164,40 @@ class AuthService {
       throw new Error('Las contraseñas no coinciden.');
     }
 
-    await this.verifyOtp(email, code);
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanCode = (code || '').replace(/[^0-9]/g, '');
 
+    if (window.db && window.db.isPostgresConnected) {
+      try {
+        const response = await fetch(`${this.API_URL}?action=reset_password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            code: cleanCode,
+            password: newPassword
+          })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Error al cambiar contraseña');
+        }
+        return true;
+      } catch (err) {
+        if (err.message.includes('La contraseña') || err.message.includes('inválido')) throw err;
+        console.warn('[AuthService] Fallback local para resetPassword');
+      }
+    }
+
+    // Fallback local
+    await this.verifyOtp(email, code);
     const users = window.db.get('users', []);
     const updatedUsers = users.map(u => {
-      if (u.email.toLowerCase() === email.toLowerCase()) {
+      if (u.email.toLowerCase() === cleanEmail) {
         return { ...u, password: newPassword };
       }
       return u;
     });
-
     window.db.set('users', updatedUsers);
     return true;
   }

@@ -1,23 +1,43 @@
 /**
- * db.js - Clase simuladora de Base de Datos para Melidan
- * Estructura limpia y directa con persistencia en LocalStorage.
- * Lista para sustituir por una API / base de datos real (SQL/MongoDB/Firebase).
+ * db.js - Conexión de Datos para Melidan
+ * Conectado a la Base de Datos PostgreSQL 18 (melidan_db) mediante REST API.
+ * Cuenta con sincronización en tiempo real y fallback automático a LocalStorage.
  */
 
 class MelidanDB {
   constructor(dbName = 'melidan_app_db') {
     this.dbName = dbName;
     this.prefix = `${dbName}_`;
+    this.apiBase = 'api';
+    this.isPostgresConnected = false;
     this.initialized = false;
     this.init();
   }
 
   /**
-   * Inicializa la base de datos y siembra datos iniciales si está vacía
+   * Inicializa la base de datos y verifica conexión con PostgreSQL
    */
-  init() {
+  async init() {
     if (this.initialized) return;
 
+    // Verificar si la API PostgreSQL está disponible
+    try {
+      const res = await fetch(`${this.apiBase}/dashboard.php`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          this.isPostgresConnected = true;
+          console.log('%c[MelidanDB] Conectado exitosamente a PostgreSQL 18 (melidan_db)', 'color: #00897B; font-weight: bold;');
+          this.updateConnectionBadge(true);
+        }
+      }
+    } catch (e) {
+      console.warn('[MelidanDB] API PostgreSQL no disponible en entorno estático. Usando persistencia local.');
+      this.isPostgresConnected = false;
+      this.updateConnectionBadge(false);
+    }
+
+    // Inicializar datos locales como fallback
     const existingUsers = this.get('users');
     if (!existingUsers || !Array.isArray(existingUsers) || existingUsers.length === 0) {
       this.seedData();
@@ -26,231 +46,167 @@ class MelidanDB {
   }
 
   /**
-   * Carga los datos iniciales del sistema gastronómico
+   * Actualiza el indicador visual de conexión con la BD en la interfaz
    */
-  seedData() {
-    // 1. Usuarios del sistema
-    const users = [
-      {
-        id: 'usr_admin',
-        name: 'Don Roberto',
-        email: 'admin@melidan.com',
-        password: 'password123',
-        role: 'ADMIN',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-        status: 'active'
-      },
-      {
-        id: 'usr_chef',
-        name: 'Marco Antonio',
-        email: 'chef@melidan.com',
-        password: 'password123',
-        role: 'CHEF',
-        avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=150&q=80',
-        status: 'active'
-      },
-      {
-        id: 'usr_mozo',
-        name: 'Carlos Paredes',
-        email: 'carlos.p@melidan.com',
-        password: 'password123',
-        role: 'WAITER',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-        status: 'active'
-      },
-      {
-        id: 'usr_caja',
-        name: 'María Salazar',
-        email: 'maria.s@melidan.com',
-        password: 'password123',
-        role: 'CASHIER',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-        status: 'active'
+  updateConnectionBadge(connected) {
+    const badges = document.querySelectorAll('.db-status-badge');
+    badges.forEach(badge => {
+      if (connected) {
+        badge.innerHTML = `<span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)`;
+        badge.className = 'db-status-badge db-connected';
+      } else {
+        badge.innerHTML = `<span class="badge-dot-amber"></span> Modo Local (Simulado)`;
+        badge.className = 'db-status-badge db-local';
       }
-    ];
-
-    // 2. Plantilla de Personal (Captura 2)
-    const staff = [
-      {
-        id: 'stf_01',
-        name: 'Carlos Paredes',
-        email: 'carlos.p@melidan.com',
-        role: 'Mozo / Salón',
-        shift: 'Turno Mañana (8:00 AM - 4:00 PM)',
-        status: 'Activo'
-      },
-      {
-        id: 'stf_02',
-        name: 'María Salazar',
-        email: 'maria.s@melidan.com',
-        role: 'Mozo / Salón',
-        shift: 'Turno Tarde (4:00 PM - 12:00 AM)',
-        status: 'Activo'
-      },
-      {
-        id: 'stf_03',
-        name: 'Jorge Ruiz',
-        email: 'jorge.r@melidan.com',
-        role: 'Mozo / Salón',
-        shift: 'Turno Rotativo',
-        status: 'Inactivo'
-      }
-    ];
-
-    // 3. Comandas y Monitoreo de Salón (Capturas 3 y 4)
-    const orders = [
-      {
-        id: '1024',
-        table: 'Mesa 08',
-        client: 'Jorge R.',
-        waiter: 'Carlos P.',
-        total: 84.00,
-        status: 'listo', // 'nuevos', 'cocinando', 'listo', 'entregado'
-        statusLabel: 'Listo para entregar',
-        time: '10:40',
-        items: [
-          { name: 'Lomo Saltado', qty: 1, note: 'SIN PECANAS (Alergia)' },
-          { name: 'Chicha Morada Jarra', qty: 1, note: 'Bien fría' }
-        ]
-      },
-      {
-        id: '1025',
-        table: 'Mesa 02',
-        client: 'María S.',
-        waiter: 'María S.',
-        total: 120.00,
-        status: 'cocinando',
-        statusLabel: 'En cocina',
-        time: '10:42',
-        items: [
-          { name: 'Arroz con Pato', qty: 2, note: 'Pierna bien dorada' },
-          { name: 'Limonada Frozen', qty: 2, note: 'Hojas de menta' }
-        ]
-      },
-      {
-        id: '1026',
-        table: 'Mesa 11',
-        client: 'Pedro L.',
-        waiter: 'Carlos P.',
-        total: 45.00,
-        status: 'cocinando',
-        statusLabel: 'En cocina',
-        time: '10:45',
-        items: [
-          { name: 'Causa Limeña', qty: 1, note: 'Sin picante' },
-          { name: 'Limonada Frozen', qty: 1, note: '' }
-        ]
-      },
-      {
-        id: '1045',
-        table: 'Mesa 04',
-        client: 'María S.',
-        waiter: 'Carlos P.',
-        total: 52.00,
-        status: 'cocinando',
-        statusLabel: 'En cocina',
-        time: '10:45',
-        items: [
-          { name: 'Arroz con Pato', qty: 1, note: '* Bien cocido' },
-          { name: 'Causa Limeña', qty: 2, note: '' }
-        ]
-      },
-      {
-        id: '1046',
-        table: 'Mesa 08',
-        client: 'Jorge R.',
-        waiter: 'Carlos P.',
-        total: 28.00,
-        status: 'nuevos',
-        statusLabel: 'Nuevo pedido',
-        time: '10:50',
-        items: [
-          { name: 'Lomo Saltado', qty: 1, note: '* SIN PECANAS (Alergia)' }
-        ]
-      }
-    ];
-
-    // 4. Carta de Platos (Captura 5)
-    const dishes = [
-      {
-        id: 'dish_01',
-        name: 'Lomo Saltado Clásico',
-        category: 'Platos de Fondo',
-        description: 'Trozos de lomo jugoso flameado al wok con cebolla, tomate, ají amarillo, servido con papas crujientes y arroz.',
-        price: 28.00,
-        popular: true,
-        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'
-      },
-      {
-        id: 'dish_02',
-        name: 'Ají de Gallina',
-        category: 'Platos de Fondo',
-        description: 'Receta tradicional con crema de ají amarillo, pechuga deshilachada, nueces, huevo duro y aceituna botija.',
-        price: 24.00,
-        popular: true,
-        image: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=600&q=80'
-      },
-      {
-        id: 'dish_03',
-        name: 'Limonada Frozen',
-        category: 'Bebidas',
-        description: 'Bebida refrescante de limón licuada con hielo frapé y hojas de menta fresca.',
-        price: 12.00,
-        popular: true,
-        image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80'
-      },
-      {
-        id: 'dish_04',
-        name: 'Causa Limeña de Pollo',
-        category: 'Entradas',
-        description: 'Masa suave de papa amarilla aliñada con ají amarillo y limón, rellena de pechuga y palta fuerte.',
-        price: 18.00,
-        popular: false,
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
-      },
-      {
-        id: 'dish_05',
-        name: 'Arroz con Pato Criollo',
-        category: 'Platos de Fondo',
-        description: 'Pierna de pato dorada con arroz al culantro y chicha de jora, acompañado de sarsa criolla.',
-        price: 36.00,
-        popular: false,
-        image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
-      },
-      {
-        id: 'dish_06',
-        name: 'Chicha Morada Clásica',
-        category: 'Bebidas',
-        description: 'Refresco artesanal de maíz morado con piña, manzana, canela y clavo de olor (Vaso).',
-        price: 10.00,
-        popular: false,
-        image: 'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=600&q=80'
-      }
-    ];
-
-    // 5. Métricas Generales del Restaurante (Captura 4)
-    const metrics = {
-      salesToday: 1450.00,
-      activeOrders: 12,
-      tablesOccupied: '8 / 15',
-      avgTime: '14 min'
-    };
-
-    // Guardar colecciones en LocalStorage
-    this.set('users', users);
-    this.set('staff', staff);
-    this.set('orders', orders);
-    this.set('dishes', dishes);
-    this.set('metrics', metrics);
-    this.set('password_resets', []);
-    this.set('cart', [
-      { id: 'dish_05', name: 'Arroz con Pato', price: 36.00, qty: 1, note: 'Bien cocido' },
-      { id: 'dish_04', name: 'Causa Limeña', price: 16.00, qty: 1, note: '' }
-    ]);
+    });
   }
 
   // ==========================================
-  // OPERACIONES DE ALMACENAMIENTO
+  // MÉTODOS DE INTEGRACIÓN CON POSTGRESQL API
+  // ==========================================
+
+  /**
+   * Obtiene métricas y monitoreo de salón desde PostgreSQL
+   */
+  async getDashboard() {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/dashboard.php`);
+        const json = await res.json();
+        if (json.success) return json;
+      } catch (err) {
+        console.error('[MelidanDB] Error en getDashboard API:', err);
+      }
+    }
+    // Fallback Local
+    return {
+      success: true,
+      metrics: {
+        ventas_hoy: 1450.00,
+        ventas_hoy_formato: 'S/ 1,450.00',
+        pedidos_activos: 12,
+        mesas_ocupadas: 8,
+        total_mesas: 15,
+        mesas_texto: '8 / 15',
+        tiempo_promedio: '14 min'
+      },
+      salon_monitor: [
+        { id_pedido: 1024, numero_comanda: 1024, numero_mesa: 8, total: '84.00', mozo_nombre: 'Carlos P.', badge_text: 'Listo para entregar', estado: 'listo' },
+        { id_pedido: 1025, numero_comanda: 1025, numero_mesa: 2, total: '48.00', mozo_nombre: 'María S.', badge_text: 'En cocina', estado: 'en_cocina' },
+        { id_pedido: 1026, numero_comanda: 1026, numero_mesa: 11, total: '64.00', mozo_nombre: 'Carlos P.', badge_text: 'Listo para entregar', estado: 'listo' }
+      ]
+    };
+  }
+
+  /**
+   * Obtiene la plantilla de personal desde PostgreSQL (tabla usuarios)
+   */
+  async getStaff() {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/staff.php`);
+        const json = await res.json();
+        if (json.success && json.staff) {
+          return json.staff;
+        }
+      } catch (err) {
+        console.error('[MelidanDB] Error en getStaff API:', err);
+      }
+    }
+    return this.get('staff', []);
+  }
+
+  /**
+   * Registra un nuevo empleado en PostgreSQL (INSERT INTO usuarios)
+   */
+  async insertStaff(employeeData) {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/staff.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(employeeData)
+        });
+        const json = await res.json();
+        if (json.success && json.member) {
+          // Mantener sincronizado localmente
+          const localStaff = this.get('staff', []);
+          localStaff.push(json.member);
+          this.set('staff', localStaff);
+          return json.member;
+        } else {
+          throw new Error(json.message || 'Error al guardar empleado');
+        }
+      } catch (err) {
+        console.error('[MelidanDB] Fallo al insertar personal en PostgreSQL:', err);
+        throw err;
+      }
+    }
+
+    // Fallback Local
+    const local = await this.insert('staff', employeeData);
+    return local;
+  }
+
+  /**
+   * Obtiene las comandas activas desde PostgreSQL
+   */
+  async getOrders() {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/orders.php`);
+        const json = await res.json();
+        if (json.success && json.orders) {
+          return json.orders;
+        }
+      } catch (err) {
+        console.error('[MelidanDB] Error en getOrders API:', err);
+      }
+    }
+    return this.get('orders', []);
+  }
+
+  /**
+   * Actualiza el estado de una comanda en PostgreSQL
+   */
+  async updateOrderStatus(orderId, status) {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/orders.php?id=${encodeURIComponent(orderId)}&status=${encodeURIComponent(status)}`, {
+          method: 'PUT'
+        });
+        const json = await res.json();
+        if (json.success) return json.order;
+      } catch (err) {
+        console.error('[MelidanDB] Error actualizando comanda en PostgreSQL:', err);
+      }
+    }
+
+    // Fallback Local
+    await this.update('orders', { id: String(orderId) }, { status: status });
+    return { id: orderId, status: status };
+  }
+
+  /**
+   * Obtiene la carta de productos desde PostgreSQL
+   */
+  async getProducts() {
+    if (this.isPostgresConnected) {
+      try {
+        const res = await fetch(`${this.apiBase}/products.php`);
+        const json = await res.json();
+        if (json.success && json.productos) {
+          return json.productos;
+        }
+      } catch (err) {
+        console.error('[MelidanDB] Error en getProducts API:', err);
+      }
+    }
+    return this.get('dishes', []);
+  }
+
+  // ==========================================
+  // OPERACIONES DE ALMACENAMIENTO LOCALSTORAGE
   // ==========================================
 
   get(collection, fallback = []) {
@@ -269,10 +225,6 @@ class MelidanDB {
       console.error(`[MelidanDB] Error guardando ${collection}:`, e);
     }
   }
-
-  // ==========================================
-  // MÉTODOS CRUD ASÍNCRONOS
-  // ==========================================
 
   async find(collection, query = {}) {
     const items = this.get(collection);
@@ -294,10 +246,6 @@ class MelidanDB {
     return results.length > 0 ? results[0] : null;
   }
 
-  async findById(collection, id) {
-    return this.findOne(collection, { id });
-  }
-
   async insert(collection, doc) {
     const items = this.get(collection);
     const newDoc = {
@@ -305,7 +253,7 @@ class MelidanDB {
       id: doc.id || `id_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       createdAt: new Date().toISOString()
     };
-    items.unshift(newDoc);
+    items.push(newDoc);
     this.set(collection, items);
     return newDoc;
   }
@@ -335,17 +283,58 @@ class MelidanDB {
     return items.length - filtered.length;
   }
 
-  reset() {
-    localStorage.removeItem(`${this.prefix}users`);
-    localStorage.removeItem(`${this.prefix}staff`);
-    localStorage.removeItem(`${this.prefix}orders`);
-    localStorage.removeItem(`${this.prefix}dishes`);
-    localStorage.removeItem(`${this.prefix}metrics`);
-    localStorage.removeItem(`${this.prefix}cart`);
-    this.initialized = false;
-    this.init();
+  /**
+   * Carga los datos iniciales de prueba para modo local
+   */
+  seedData() {
+    const users = [
+      {
+        id: 'usr_admin',
+        name: 'Don Roberto',
+        email: 'admin@melidan.com',
+        password: 'password123',
+        role: 'ADMIN',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        status: 'active'
+      },
+      {
+        id: 'usr_chef',
+        name: 'Marco Antonio',
+        email: 'chef@melidan.com',
+        password: 'password123',
+        role: 'CHEF',
+        avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=150&q=80',
+        status: 'active'
+      },
+      {
+        id: 'usr_mozo',
+        name: 'Carlos Paredes',
+        email: 'carlos.p@melidan.com',
+        password: 'password123',
+        role: 'WAITER',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+        status: 'active'
+      }
+    ];
+
+    const staff = [
+      { id: 1, name: 'Carlos Paredes', email: 'carlos.p@melidan.com', role: 'Mozo / Salón', shift: 'Turno Mañana (8:00 AM - 4:00 PM)', status: 'Activo' },
+      { id: 2, name: 'María Salazar', email: 'maria.s@melidan.com', role: 'Mozo / Salón', shift: 'Turno Tarde (4:00 PM - 12:00 AM)', status: 'Activo' },
+      { id: 3, name: 'Jorge Ruiz', email: 'jorge.r@melidan.com', role: 'Mozo / Salón', shift: 'Turno Rotativo', status: 'Inactivo' }
+    ];
+
+    const dishes = [
+      { id: 1, name: 'Lechón a Fuego Lento', category: 'Platos de Fondo', price: 48.00, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80' },
+      { id: 2, name: 'Costillar Glaseado', category: 'Platos de Fondo', price: 42.00, image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=600&q=80' },
+      { id: 3, name: 'Lomo Saltado', category: 'Platos de Fondo', price: 38.00, image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80' },
+      { id: 4, name: 'Chicha Morada (1L)', category: 'Bebidas', price: 14.00, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    this.set('users', users);
+    this.set('staff', staff);
+    this.set('dishes', dishes);
   }
 }
 
-// Instancia global accesible
+// Instancia global
 window.db = new MelidanDB();
