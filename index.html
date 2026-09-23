@@ -5,351 +5,544 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#FF5722">
   <title>Melidan - Sistema de Gestión Gastronómica</title>
-  <meta name="description" content="Aplicación web gastronómica Melidan para gestión de pedidos, salón, cocina y facturación.">
+  <meta name="description" content="Sistema integral gastronómico Melidan: Administración, KDS de Cocina, Gestión de Personal, Carta QR y Monitoreo.">
   
-  <!-- Tipografía Google: Outfit & Plus Jakarta Sans -->
+  <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
-  <!-- Estilos Mobile-First de la Aplicación -->
-  <link rel="stylesheet" href="src/styles/login.css">
+  <!-- Estilos Custom de la Aplicación -->
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Contenedor Principal de la App (Mobile-First) -->
-  <div class="app-viewport">
+  <!-- Contenedor Principal Mobile-First -->
+  <main class="app-container">
 
     <!-- ====================================================================
-         CONTENEDOR DE AUTENTICACIÓN (LOGIN Y RECUPERACIÓN)
+         1. PANTALLAS DE AUTENTICACIÓN (LOGIN & RECUPERACIÓN)
          ==================================================================== -->
-    <div class="auth-container" id="auth-flow-container">
 
-      <!-- Alerta de Notificación del Formulario -->
-      <div class="app-alert" id="app-alert-banner" role="alert"></div>
-
-      <!-- ------------------------------------------------------------------
-           1. PANTALLA: INICIAR SESIÓN (Screenshot 2 de Figma)
-           ------------------------------------------------------------------ -->
-      <section class="screen-view active-screen" id="screen-login">
-        <div class="auth-header">
-          <h1 class="brand-logo-text">Melidan<span class="dot">.</span></h1>
-          <p class="brand-subtitle-text">Ingresa para gestionar tus pedidos</p>
+    <!-- PANTALLA: LOGIN (Captura 2) -->
+    <section class="view-screen active-screen" id="screen-login">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <h1 class="brand-title">Melidan<span class="brand-dot">.</span></h1>
+          <p class="brand-subtitle">Ingresa para gestionar tus pedidos</p>
         </div>
 
-        <form class="auth-form" id="form-login" novalidate>
-          <div class="form-field-group">
-            <label for="login-email" class="form-field-label">Correo Electrónico</label>
-            <input 
-              type="email" 
-              id="login-email" 
-              class="form-field-input" 
-              placeholder="ejemplo@correo.com" 
-              value="admin@melidan.com" 
-              required 
-              autocomplete="email"
-            >
+        <div id="login-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-login" novalidate>
+          <div class="mb-3">
+            <label for="login-email" class="form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="login-email" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com" required>
           </div>
 
-          <div class="form-field-group">
-            <label for="login-password" class="form-field-label">Contraseña</label>
-            <input 
-              type="password" 
-              id="login-password" 
-              class="form-field-input" 
-              placeholder="••••••••" 
-              value="password123" 
-              required 
-              autocomplete="current-password"
-            >
+          <div class="mb-3">
+            <label for="login-password" class="form-label-melidan">Contraseña</label>
+            <input type="password" id="login-password" class="form-control form-control-melidan" placeholder="••••••••" value="password123" required>
           </div>
 
-          <button type="submit" class="btn-melidan-primary" id="btn-login-submit">
+          <button type="submit" class="btn-melidan-orange" id="btn-login-submit">
             Iniciar Sesión
           </button>
 
-          <a href="#" class="link-melidan-orange" id="link-to-forgot">
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('forgot-step1'); return false;">
             ¿Olvidaste tu contraseña?
           </a>
         </form>
-      </section>
+      </div>
+    </section>
 
-      <!-- ------------------------------------------------------------------
-           2. PANTALLA: RECUPERAR CONTRASEÑA - PASO 1 (Screenshot 3)
-           ------------------------------------------------------------------ -->
-      <section class="screen-view" id="screen-forgot-step1">
-        <div class="auth-header">
-          <div class="brand-logo-text">Melidan<span class="dot">.</span></div>
-          <p class="brand-subtitle-text">Ingresa tu correo para recibir el codigo de verificacion</p>
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 1 (Captura 3) -->
+    <section class="view-screen" id="screen-forgot-step1">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa tu correo para recibir el codigo de verificacion</p>
         </div>
 
-        <form class="auth-form" id="form-forgot-step1" novalidate>
-          <div class="form-field-group">
-            <label for="forgot-email" class="form-field-label">Correo Electrónico</label>
-            <input 
-              type="email" 
-              id="forgot-email" 
-              class="form-field-input" 
-              placeholder="ejemplo@correo.com" 
-              value="admin@melidan.com" 
-              required
-            >
+        <div id="forgot1-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step1">
+          <div class="mb-3">
+            <label for="forgot-email" class="form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="forgot-email" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com" required>
           </div>
 
-          <button type="submit" class="btn-melidan-primary" id="btn-send-code">
+          <button type="submit" class="btn-melidan-orange">
             Enviar codigo de 6 digitos
           </button>
 
-          <a href="#" class="link-melidan-orange link-back-to-login">
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
             ¿Volver al inicio de seccion?
           </a>
         </form>
-      </section>
+      </div>
+    </section>
 
-      <!-- ------------------------------------------------------------------
-           3. PANTALLA: RECUPERAR CONTRASEÑA - PASO 2 (Screenshot 4)
-           ------------------------------------------------------------------ -->
-      <section class="screen-view" id="screen-forgot-step2">
-        <div class="auth-header">
-          <div class="brand-logo-text">Melidan<span class="dot">.</span></div>
-          <p class="brand-subtitle-text">Ingresa el codigo de 6 digitos</p>
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 2 (Captura 4) -->
+    <section class="view-screen" id="screen-forgot-step2">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa el codigo de 6 digitos</p>
         </div>
 
-        <form class="auth-form" id="form-forgot-step2" novalidate>
-          <div class="form-field-group">
-            <label for="otp-code" class="form-field-label">Codigo</label>
-            <input 
-              type="text" 
-              id="otp-code" 
-              class="form-field-input" 
-              placeholder="XXX-XXX" 
-              maxlength="7" 
-              required 
-              style="letter-spacing: 2px; font-weight: 700; text-align: center;"
-            >
+        <div id="forgot2-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step2">
+          <div class="mb-3">
+            <label for="otp-code" class="form-label-melidan">Codigo</label>
+            <input type="text" id="otp-code" class="form-control form-control-melidan text-center fw-bold fs-5" placeholder="XXX-XXX" maxlength="7" required>
           </div>
 
-          <button type="submit" class="btn-melidan-primary" id="btn-verify-code">
+          <button type="submit" class="btn-melidan-orange">
             Enviar codigo de 6 digitos
           </button>
 
-          <a href="#" class="link-melidan-orange link-back-to-login">
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
             ¿Volver al inicio de seccion?
           </a>
         </form>
-      </section>
+      </div>
+    </section>
 
-      <!-- ------------------------------------------------------------------
-           4. PANTALLA: RECUPERAR CONTRASEÑA - PASO 3 (Screenshot 1)
-           ------------------------------------------------------------------ -->
-      <section class="screen-view" id="screen-forgot-step3">
-        <div class="auth-header">
-          <div class="brand-logo-text">Melidan<span class="dot">.</span></div>
-          <p class="brand-subtitle-text">Ingresa tu nueva contraseña</p>
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 3 (Captura 1) -->
+    <section class="view-screen" id="screen-forgot-step3">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa tu nueva contraseña</p>
         </div>
 
-        <form class="auth-form" id="form-forgot-step3" novalidate>
-          <div class="form-field-group">
-            <label for="new-password" class="form-field-label">Contraseña</label>
-            <input 
-              type="password" 
-              id="new-password" 
-              class="form-field-input" 
-              placeholder="Password" 
-              required
-            >
+        <div id="forgot3-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step3">
+          <div class="mb-3">
+            <label for="new-password" class="form-label-melidan">Contraseña</label>
+            <input type="password" id="new-password" class="form-control form-control-melidan" placeholder="Password" required>
           </div>
 
-          <div class="form-field-group">
-            <label for="confirm-password" class="form-field-label">Repite tu contraseña</label>
-            <input 
-              type="password" 
-              id="confirm-password" 
-              class="form-field-input" 
-              placeholder="PassWord" 
-              required
-            >
+          <div class="mb-3">
+            <label for="confirm-password" class="form-label-melidan">Repite tu contraseña</label>
+            <input type="password" id="confirm-password" class="form-control form-control-melidan" placeholder="PassWord" required>
           </div>
 
-          <button type="submit" class="btn-melidan-primary" id="btn-change-password">
+          <button type="submit" class="btn-melidan-orange">
             Cambiar contraseña
           </button>
 
-          <a href="#" class="link-melidan-orange link-back-to-login">
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
             ¿Volver al inicio de seccion?
           </a>
         </form>
-      </section>
-
-    </div>
+      </div>
+    </section>
 
     <!-- ====================================================================
-         5. PANTALLA PRINCIPAL DE LA APLICACIÓN (POST-LOGIN / DASHBOARD REAL)
+         2. PANEL DE ADMINISTRADOR / DUEÑO (Captura 4)
          ==================================================================== -->
-    <div class="app-home-screen" id="app-home-screen">
-      
-      <!-- Encabezado de la App Autenticada -->
-      <header class="app-header">
-        <div class="app-header-left">
-          <img src="" alt="Avatar" class="app-header-avatar" id="home-user-avatar">
-          <div class="app-header-user-info">
-            <h3 id="home-user-name">Don Roberto</h3>
-            <span class="app-header-role-badge" id="home-user-role">ADMINISTRADOR</span>
-          </div>
+    <section class="view-screen" id="screen-admin">
+      <!-- Cabecera de Administración -->
+      <div class="admin-header">
+        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+        <div class="user-profile">
+          <span class="user-name">Don Roberto</span>
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="admin-user-avatar">
         </div>
-
-        <button type="button" class="btn-header-logout" id="btn-home-logout" title="Cerrar Sesión Segura">
-          <i class="bi bi-box-arrow-right"></i>
-        </button>
-      </header>
-
-      <!-- Cuerpo del Dashboard del Salón -->
-      <div class="app-home-body">
-        
-        <!-- Tarjeta de Estado Operativo del Restaurante -->
-        <div class="status-summary-card">
-          <div class="status-card-header">
-            <div>
-              <div style="font-size: 0.78rem; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Restaurante Melidan</div>
-              <div style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">Operación de Salón</div>
-            </div>
-            <div class="status-badge-live">
-              <span class="status-dot-blink"></span>
-              <span>En Turno</span>
-            </div>
-          </div>
-
-          <div class="status-metrics-grid">
-            <div class="status-metric-box">
-              <div class="status-metric-val" id="metric-tables">5 / 15</div>
-              <div class="status-metric-lbl">Mesas Ocupadas</div>
-            </div>
-            <div class="status-metric-box">
-              <div class="status-metric-val" id="metric-kds">4</div>
-              <div class="status-metric-lbl">En Cocina</div>
-            </div>
-            <div class="status-metric-box">
-              <div class="status-metric-val" id="metric-sales">S/ 1,480</div>
-              <div class="status-metric-lbl">Venta Hoy</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Módulos de Operación Rápida -->
-        <div>
-          <div class="section-title">
-            <span>Acceso Operativo</span>
-            <small style="color: var(--melidan-orange); font-weight: 600;" id="home-role-hint">Rol: Administrador</small>
-          </div>
-
-          <div class="actions-grid">
-            <button type="button" class="action-tile-btn" onclick="loginController.handleActionClick('Comandas')">
-              <div class="action-tile-icon icon-orange">
-                <i class="bi bi-receipt-cutoff"></i>
-              </div>
-              <div class="action-tile-title">Nueva Comanda</div>
-              <div class="action-tile-desc">Tomar pedidos de mesa</div>
-            </button>
-
-            <button type="button" class="action-tile-btn" onclick="loginController.handleActionClick('Mapa de Mesas')">
-              <div class="action-tile-icon icon-blue">
-                <i class="bi bi-grid-3x3-gap-fill"></i>
-              </div>
-              <div class="action-tile-title">Mapa de Mesas</div>
-              <div class="action-tile-desc">Disponibilidad en vivo</div>
-            </button>
-
-            <button type="button" class="action-tile-btn" onclick="loginController.handleActionClick('Cocina KDS')">
-              <div class="action-tile-icon icon-green">
-                <i class="bi bi-fire"></i>
-              </div>
-              <div class="action-tile-title">Monitor KDS</div>
-              <div class="action-tile-desc">Pantalla de cocina</div>
-            </button>
-
-            <button type="button" class="action-tile-btn" onclick="loginController.handleActionClick('Caja y Pagos')">
-              <div class="action-tile-icon icon-purple">
-                <i class="bi bi-credit-card-fill"></i>
-              </div>
-              <div class="action-tile-title">Caja / Cobros</div>
-              <div class="action-tile-desc">Cierre de cuentas</div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Registro de Auditoría de Base de Datos -->
-        <div class="activity-card">
-          <div class="section-title" style="margin-bottom: 0.5rem;">
-            <span>Actividad Reciente (Auditoría BD)</span>
-            <i class="bi bi-shield-check text-success"></i>
-          </div>
-          <div class="activity-list" id="home-audit-list">
-            <div class="activity-item">
-              <span class="activity-item-title">Sesión iniciada correctamente</span>
-              <span class="activity-item-time">Ahora</span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Barra de Navegación Móvil Inferior (Mobile Tab Bar) -->
-      <nav class="mobile-bottom-nav">
-        <button type="button" class="nav-tab-btn active" onclick="loginController.switchTab('inicio')">
-          <i class="bi bi-house-door-fill"></i>
-          <span>Inicio</span>
-        </button>
-        <button type="button" class="nav-tab-btn" onclick="loginController.switchTab('mesas')">
-          <i class="bi bi-grid-fill"></i>
-          <span>Mesas</span>
-        </button>
-        <button type="button" class="nav-tab-btn" onclick="loginController.switchTab('pedidos')">
-          <i class="bi bi-receipt"></i>
-          <span>Pedidos</span>
-        </button>
-        <button type="button" class="nav-tab-btn" onclick="loginController.switchTab('perfil')">
-          <i class="bi bi-person-fill"></i>
-          <span>Perfil</span>
-        </button>
-      </nav>
+      <div class="px-3 py-2 flex-grow-1">
+        <!-- Sección: Resumen de Hoy -->
+        <div class="mb-4">
+          <h3 class="section-heading">Resumen de Hoy</h3>
+          <div class="row g-2">
+            <div class="col-6">
+              <div class="metric-card">
+                <span class="metric-label">Ventas de Hoy</span>
+                <span class="metric-value val-teal" id="metric-sales">S/ 1,450.00</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="metric-card">
+                <span class="metric-label">Pedidos Activos</span>
+                <span class="metric-value val-orange" id="metric-active-orders">12</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="metric-card">
+                <span class="metric-label">Mesas Ocupadas</span>
+                <span class="metric-value val-teal" id="metric-tables">8 / 15</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="metric-card">
+                <span class="metric-label">Tiempo Promedio</span>
+                <span class="metric-value val-red" id="metric-avg-time">14 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    </div>
+        <!-- Sección: Monitoreo (Salón) -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="section-heading mb-0">Monitoreo (Salón)</h3>
+            <a href="#" class="section-link" onclick="app.showScreen('kds'); return false;">Ver todos</a>
+          </div>
 
+          <div id="admin-orders-list">
+            <!-- Pedido 1024 -->
+            <div class="order-monitoring-card">
+              <div class="order-header-line">
+                <span class="order-id-table">#1024 • Mesa 08</span>
+                <span class="order-price">S/ 84.00</span>
+              </div>
+              <div class="order-footer-line">
+                <span class="order-waiter-name">Mozo: Carlos P.</span>
+                <span class="badge-status-ready">Listo para entregar</span>
+              </div>
+            </div>
+
+            <!-- Pedido 1025 -->
+            <div class="order-monitoring-card">
+              <div class="order-header-line">
+                <span class="order-id-table">#1025 • Mesa 02</span>
+                <span class="order-price">S/ 120.00</span>
+              </div>
+              <div class="order-footer-line">
+                <span class="order-waiter-name">Mozo: María S.</span>
+                <span class="badge-status-cooking">En cocina</span>
+              </div>
+            </div>
+
+            <!-- Pedido 1026 -->
+            <div class="order-monitoring-card">
+              <div class="order-header-line">
+                <span class="order-id-table">#1026 • Mesa 11</span>
+                <span class="order-price">S/ 45.00</span>
+              </div>
+              <div class="order-footer-line">
+                <span class="order-waiter-name">Mozo: Carlos P.</span>
+                <span class="badge-status-cooking">En cocina</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         3. GESTIÓN DE PERSONAL (Captura 2)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-staff">
+      <!-- Cabecera -->
+      <div class="admin-header border-bottom">
+        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar">
+      </div>
+
+      <div class="px-3 py-3 flex-grow-1">
+        <h3 class="fw-bold fs-4 text-dark mb-1">Gestión de Personal</h3>
+        <h4 class="fw-bold fs-6 text-dark mb-3">Plantilla de Mozos</h4>
+
+        <!-- Lista de Mozos -->
+        <div id="staff-cards-container">
+          <!-- Se cargan dinámicamente desde window.db.staff -->
+        </div>
+
+        <!-- Formulario: Registrar Nuevo Empleado -->
+        <div class="mt-4 pt-2 border-top">
+          <h4 class="fw-bold fs-6 text-dark mb-3">Registrar Nuevo Empleado</h4>
+
+          <form id="form-new-staff" class="border rounded-4 p-3 bg-light-subtle">
+            <div class="mb-3">
+              <label for="staff-name-input" class="form-label-melidan">Nombre Completo</label>
+              <input type="text" id="staff-name-input" class="form-control form-control-melidan bg-white" placeholder="Ej. Juan Pérez" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-role-select" class="form-label-melidan">Rol en el Sistema</label>
+              <select id="staff-role-select" class="form-select form-control-melidan bg-white">
+                <option value="Mozo / Salón">Mozo / Atención de salón</option>
+                <option value="Cocinero / KDS">Cocinero / Cocina</option>
+                <option value="Cajero / Facturación">Cajero / Facturación</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-melidan-teal">
+              Guardar Usuario
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         4. COCINA KDS (Captura 3)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-kds">
+      <div class="kds-view-container flex-grow-1">
+        <!-- Cabecera KDS Oscura -->
+        <div class="kds-header">
+          <h2 class="brand-title mb-0 fs-2 text-white">Melidan<span class="brand-dot">.</span></h2>
+          <div class="kds-badge-station">
+            <span>Estación: Wok</span>
+            <span class="kds-time-text" id="kds-clock">13:45 PM</span>
+          </div>
+        </div>
+
+        <!-- Pestañas de Cocina -->
+        <div class="kds-tabs-row">
+          <button type="button" class="kds-tab-btn" data-tab="nuevos" onclick="app.filterKds('nuevos')">Nuevos (2)</button>
+          <button type="button" class="kds-tab-btn active" data-tab="cocinando" onclick="app.filterKds('cocinando')">Cocinando (1)</button>
+          <button type="button" class="kds-tab-btn" data-tab="listos" onclick="app.filterKds('listos')">Listos (0)</button>
+        </div>
+
+        <!-- Tarjetas de Pedidos KDS -->
+        <div id="kds-orders-container">
+          <!-- Mesa 04 -->
+          <div class="kds-order-card" id="kds-card-1045">
+            <div class="kds-card-header">
+              <div>
+                <div class="kds-table-title">Mesa 04</div>
+                <small class="text-secondary">#1045 • Cliente: María S.</small>
+              </div>
+              <span class="kds-card-time">10:45</span>
+            </div>
+            <div class="kds-dish-line">
+              <span class="kds-dish-qty">1x</span>
+              <span class="text-white">Arroz con Pato</span>
+              <div class="kds-dish-note">* Bien cocido</div>
+            </div>
+            <div class="kds-dish-line mb-3">
+              <span class="kds-dish-qty">2x</span>
+              <span class="text-white">Causa Limeña</span>
+            </div>
+            <button type="button" class="btn-kds-ready" onclick="app.markKdsReady('1045')">
+              ¡Plato Listo!
+            </button>
+          </div>
+
+          <!-- Mesa 08 -->
+          <div class="kds-order-card" id="kds-card-1046">
+            <div class="kds-card-header">
+              <div>
+                <div class="kds-table-title">Mesa 08</div>
+                <small class="text-secondary">#1046 • Cliente: Jorge R.</small>
+              </div>
+              <span class="kds-card-time">10:50</span>
+            </div>
+            <div class="kds-dish-line mb-3">
+              <span class="kds-dish-qty">1x</span>
+              <span class="text-white">Lomo Saltado</span>
+              <div class="kds-dish-note">* SIN PECANAS (Alergia)</div>
+            </div>
+            <button type="button" class="btn-kds-prepare" onclick="app.markKdsCooking('1046')">
+              Preparar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         5. CARTA DIGITAL QR (Captura 5)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-menu">
+      <!-- Cabecera Carta -->
+      <div class="p-3 d-flex justify-content-between align-items-center">
+        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+        <span class="table-pill-badge">Mesa #04</span>
+      </div>
+
+      <!-- Buscador -->
+      <div class="px-3 pb-3 position-relative">
+        <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+        <input type="text" id="menu-search-input" class="search-input-box" placeholder="Buscar plato o bebida..." oninput="app.searchMenu(this.value)">
+      </div>
+
+      <!-- Filtros de Categorías -->
+      <div class="category-pills-row">
+        <button type="button" class="category-pill active" onclick="app.filterCategory('Todos', this)">Todos</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Entradas', this)">Entradas</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Platos de Fondo', this)">Platos de Fondo</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Bebidas', this)">Bebidas</button>
+      </div>
+
+      <div class="px-3 mb-2">
+        <h3 class="fw-bold fs-5 text-dark mb-0">Populares hoy</h3>
+      </div>
+
+      <!-- Lista de Platos -->
+      <div id="menu-dishes-container" class="flex-grow-1">
+        <!-- Renderizado dinámicamente desde window.db.dishes -->
+      </div>
+
+      <!-- Barra Flotante de Carrito -->
+      <div class="cart-floating-bar" onclick="app.showScreen('tracker')">
+        <div class="d-flex align-items-center gap-2">
+          <span class="cart-count-pill" id="cart-item-count">2 items</span>
+          <span class="fw-bold text-dark fs-6">Ver Carrito</span>
+        </div>
+        <span class="fw-bold text-dark fs-6" id="cart-total-amount">S/ 52.00</span>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         6. SEGUIMIENTO / TRACKER DE PEDIDO (Captura 1)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-tracker">
+      <!-- Cabecera -->
+      <div class="p-3 d-flex justify-content-between align-items-center">
+        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+        <span class="table-pill-badge">Mesa #04</span>
+      </div>
+
+      <div class="px-2 flex-grow-1">
+        <!-- Tarjeta de Pedido -->
+        <div class="order-overview-card">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold fs-5 text-dark">Pedido • #1045</span>
+            <span class="badge-status-cooking" id="tracker-status-badge">En cocina</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center text-secondary small">
+            <span>Tiempo estimado:</span>
+            <span class="fw-bold text-dark fs-6">12 - 15 min</span>
+          </div>
+        </div>
+
+        <!-- Stepper de 4 Fases -->
+        <div class="stepper-card">
+          <div class="stepper-step">
+            <div class="step-marker text-success">✓</div>
+            <div>
+              <div class="step-title">Pedido confirmado y Pagado</div>
+              <div class="step-desc">10:45 AM • Pagado via Yape (S/ 52.00)</div>
+            </div>
+          </div>
+
+          <div class="stepper-step">
+            <div class="step-marker text-warning">●</div>
+            <div>
+              <div class="step-title">En Preparacion (Cocina)</div>
+              <div class="step-desc">Estacion Wok • El chef esta preparando tus platos con las notas solicitadas</div>
+            </div>
+          </div>
+
+          <div class="stepper-step opacity-75" id="step-ready">
+            <div class="step-marker text-secondary">○</div>
+            <div>
+              <div class="step-title">¡Plato Listo para Servir!</div>
+              <div class="step-desc">El mozo Carlos P. lo llevara inmediatamente a tu mesa</div>
+            </div>
+          </div>
+
+          <div class="stepper-step opacity-50" id="step-delivered">
+            <div class="step-marker text-secondary">○</div>
+            <div>
+              <div class="step-title">Entregado en Mesa</div>
+              <div class="step-desc">¡Buen provecho!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platos en este pedido -->
+        <div class="order-overview-card mb-3">
+          <div class="fw-bold fs-6 text-dark mb-2">Platos en este pedido:</div>
+          <div class="text-secondary small mb-1">• 1x Arroz con Pato (*Bien cocido)</div>
+          <div class="text-secondary small">• 2x Causa Limeña</div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="px-3 pb-4 text-center">
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.showToast('Boleta Electrónica B001-000412 descargada en PDF')">
+            Ver boleta Electronica
+          </button>
+
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.showToast('Mozo Carlos P. notificado a la Mesa 04')">
+            Llamar al Mozo
+          </button>
+
+          <a href="#" class="link-melidan-orange d-block mt-2" onclick="app.showScreen('menu'); return false;">
+            + Pedir algo mas
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         BARRA DE NAVEGACIÓN INFERIOR (TAB BAR MOBILE-FIRST)
+         ==================================================================== -->
+    <nav class="app-bottom-bar" id="app-bottom-bar">
+      <button type="button" class="bottom-bar-btn active" data-screen="admin" onclick="app.showScreen('admin')">
+        <i class="bi bi-bar-chart-fill"></i>
+        <span>Admin</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="staff" onclick="app.showScreen('staff')">
+        <i class="bi bi-people-fill"></i>
+        <span>Personal</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="kds" onclick="app.showScreen('kds')">
+        <i class="bi bi-fire"></i>
+        <span>Cocina</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="menu" onclick="app.showScreen('menu')">
+        <i class="bi bi-qr-code"></i>
+        <span>Carta QR</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="tracker" onclick="app.showScreen('tracker')">
+        <i class="bi bi-clock-history"></i>
+        <span>Tracker</span>
+      </button>
+      <button type="button" class="bottom-bar-btn text-danger" onclick="app.logout()" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Salir</span>
+      </button>
+    </nav>
+
+  </main>
+
+  <!-- Botón Flotante para Cambiar Rápido de Roles (Evaluación) -->
+  <div class="dev-role-floater dropdown">
+    <button class="btn btn-dark btn-sm rounded-pill shadow-lg dropdown-toggle px-3 py-2 fw-bold" type="button" data-bs-toggle="dropdown">
+      ⚡ Probar Rol
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2">
+      <li><h6 class="dropdown-header small fw-bold">Credenciales 1-Clic</h6></li>
+      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('admin@melidan.com')">👑 Admin (Don Roberto)</a></li>
+      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('chef@melidan.com')">👨‍🍳 Chef (Marco Antonio)</a></li>
+      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('carlos.p@melidan.com')">🛎️ Mozo (Carlos P.)</a></li>
+      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('maria.s@melidan.com')">💳 Cajera (María S.)</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item small text-danger py-1" href="#" onclick="window.db.reset(); location.reload();">↺ Restablecer Base de Datos</a></li>
+    </ul>
   </div>
 
-  <!-- Botón y Panel Flotante para Pruebas Rápidas de Roles -->
-  <button type="button" class="dev-tester-trigger" id="btn-tester-trigger" title="Probar con un clic cualquier rol">
-    <i class="bi bi-lightning-charge-fill text-warning"></i>
-    <span>Roles</span>
-  </button>
-
-  <div class="dev-tester-panel" id="dev-tester-panel">
-    <div class="dev-tester-header">
-      <span>Cargar Rol de Prueba</span>
-      <button type="button" id="btn-close-tester" style="background:none; border:none; color:#64748B; cursor:pointer; font-size:1.1rem;">&times;</button>
+  <!-- Toast de Notificaciones -->
+  <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
+    <div id="liveToast" class="toast align-items-center text-bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body small fw-semibold" id="toastMessage">Acción ejecutada</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
     </div>
-    <button type="button" class="btn-dev-role" data-email="admin@melidan.com" data-password="password123" data-name="Dueño / Admin">
-      <span>👑 Dueño / Admin</span>
-      <small style="color:#64748B;">admin@</small>
-    </button>
-    <button type="button" class="btn-dev-role" data-email="chef@melidan.com" data-password="password123" data-name="Chef KDS">
-      <span>👨‍🍳 Chef KDS</span>
-      <small style="color:#64748B;">chef@</small>
-    </button>
-    <button type="button" class="btn-dev-role" data-email="carlos.p@melidan.com" data-password="password123" data-name="Mozo Salón">
-      <span>🛎️ Mozo Salón</span>
-      <small style="color:#64748B;">carlos.p@</small>
-    </button>
-    <button type="button" class="btn-dev-role" data-email="maria.s@melidan.com" data-password="password123" data-name="Caja / Cobros">
-      <span>💳 Caja / Cobros</span>
-      <small style="color:#64748B;">maria.s@</small>
-    </button>
   </div>
 
-  <!-- Script Principal Autónomo de Melidan -->
-  <script src="src/bundle.js"></script>
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Scripts de la Aplicación -->
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

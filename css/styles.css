@@ -1,0 +1,733 @@
+/**
+ * styles.css - Melidan App (Estilos Mobile-First de Producción con Bootstrap 5)
+ * Réplica exacta de todas las vistas del prototipo Figma.
+ */
+
+:root {
+  --melidan-orange: #FF5722;
+  --melidan-orange-hover: #F4511E;
+  --melidan-teal: #009B77;
+  --melidan-teal-hover: #008767;
+  --text-dark: #0F172A;
+  --text-muted: #64748B;
+  --border-light: #E2E8F0;
+  --radius-card: 16px;
+  --radius-btn: 14px;
+}
+
+/* ==========================================================================
+   Base y Mobile-First Shell
+   ========================================================================== */
+body {
+  background-color: #F8FAFC;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 540px) {
+  .app-container {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
+/* ==========================================================================
+   Vistas de la Aplicación (SPA)
+   ========================================================================== */
+.view-screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+}
+
+.view-screen.active-screen {
+  display: flex;
+  animation: fadeInView 0.2s ease-out;
+}
+
+@keyframes fadeInView {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   1. Pantallas de Autenticación (Login y Recuperación)
+   ========================================================================== */
+.auth-content {
+  padding: 3.5rem 1.85rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.brand-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.85rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-dark);
+  line-height: 1;
+}
+
+.brand-dot {
+  color: var(--melidan-orange);
+}
+
+.brand-subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.35;
+}
+
+.form-label-melidan {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.form-control-melidan {
+  height: 54px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-btn);
+  padding: 0 1.15rem;
+  font-size: 1.02rem;
+  color: #1E293B;
+  background-color: #FFFFFF;
+}
+
+.form-control-melidan:focus {
+  border-color: var(--melidan-orange);
+  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.12);
+}
+
+.btn-melidan-orange {
+  height: 54px;
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: var(--radius-btn);
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.25);
+  transition: all 0.2s ease;
+  margin-top: 0.75rem;
+}
+
+.btn-melidan-orange:hover, .btn-melidan-orange:focus {
+  background-color: var(--melidan-orange-hover);
+  color: #FFFFFF;
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.35);
+}
+
+.link-melidan-orange {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+  margin-top: 1.5rem;
+  cursor: pointer;
+}
+
+.link-melidan-orange:hover {
+  text-decoration: underline;
+  color: var(--melidan-orange-hover);
+}
+
+/* ==========================================================================
+   2. Panel de Administrador (Captura 4)
+   ========================================================================== */
+.admin-header {
+  padding: 1.25rem 1.25rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-header .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.admin-header .user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.admin-header .user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.section-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.85rem;
+}
+
+.section-link {
+  color: var(--melidan-teal);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+.metric-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.metric-value {
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.val-teal { color: var(--melidan-teal); }
+.val-orange { color: var(--melidan-orange); }
+.val-red { color: #EF4444; }
+
+.order-monitoring-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.order-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.order-id-table {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+}
+
+.order-price {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+}
+
+.order-footer-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-waiter-name {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.badge-status-ready {
+  background-color: #E6F8F3;
+  color: var(--melidan-teal);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+}
+
+.badge-status-cooking {
+  background-color: #FFF2EA;
+  color: var(--melidan-orange);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   3. Gestión de Personal (Captura 2)
+   ========================================================================== */
+.staff-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.staff-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.staff-name-text {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-dark);
+}
+
+.badge-staff-active {
+  background-color: #E6F8F3;
+  color: var(--melidan-teal);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+}
+
+.badge-staff-inactive {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+}
+
+.staff-meta-text {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.staff-actions-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #F1F5F9;
+}
+
+.action-text-teal {
+  color: var(--melidan-teal);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action-text-muted {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-melidan-teal {
+  background-color: var(--melidan-teal);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  height: 52px;
+  border-radius: var(--radius-btn);
+  border: none;
+  width: 100%;
+}
+
+.btn-melidan-teal:hover {
+  background-color: var(--melidan-teal-hover);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   4. Cocina KDS Pantalla Oscura (Captura 3)
+   ========================================================================== */
+.kds-view-container {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.kds-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kds-badge-station {
+  background: rgba(255, 255, 255, 0.12);
+  color: #F1F5F9;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.kds-time-text {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.kds-tabs-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1rem;
+}
+
+.kds-tab-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #94A3B8;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kds-tab-btn.active {
+  background-color: var(--melidan-teal);
+  color: #FFFFFF;
+}
+
+.kds-order-card {
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
+  padding: 1.15rem;
+  margin: 0 1.25rem 1rem;
+}
+
+.kds-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kds-table-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.kds-card-time {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.kds-dish-line {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.kds-dish-qty {
+  color: var(--melidan-teal);
+  font-weight: 800;
+  margin-right: 0.4rem;
+}
+
+.kds-dish-note {
+  color: #EF4444;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.btn-kds-ready {
+  background-color: var(--melidan-teal);
+  color: #FFFFFF;
+  font-weight: 700;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+}
+
+.btn-kds-prepare {
+  background-color: #334155;
+  color: #F1F5F9;
+  font-weight: 700;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+}
+
+/* ==========================================================================
+   5. Carta Digital QR (Captura 5)
+   ========================================================================== */
+.table-pill-badge {
+  background-color: #FFF2EA;
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+}
+
+.search-input-box {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  height: 50px;
+  padding: 0 1rem 0 2.5rem;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.category-pills-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0 1.25rem 1rem;
+  scrollbar-width: none;
+}
+
+.category-pill {
+  padding: 0.45rem 1.15rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-light);
+  background: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.category-pill.active {
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  border-color: var(--melidan-orange);
+}
+
+.dish-item-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1rem;
+  margin: 0 1.25rem 0.85rem;
+  display: flex;
+  gap: 0.85rem;
+}
+
+.dish-img-thumb {
+  width: 82px;
+  height: 82px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dish-name-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.dish-desc-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dish-price-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--melidan-orange);
+}
+
+.btn-add-dish {
+  width: 38px;
+  height: 38px;
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cart-floating-bar {
+  position: sticky;
+  bottom: 0;
+  background: #FFFFFF;
+  border-top: 1.5px solid var(--border-light);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.cart-count-pill {
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   6. Seguimiento / Tracker de Pedido (Captura 1)
+   ========================================================================== */
+.order-overview-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1.15rem;
+  margin: 0 1.25rem 1rem;
+}
+
+.stepper-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 1.25rem 1.25rem 0.75rem;
+  margin: 0 1.25rem 1rem;
+}
+
+.stepper-step {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.step-marker {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  width: 20px;
+  text-align: center;
+}
+
+.step-title {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.step-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.btn-outline-dark-melidan {
+  height: 52px;
+  border: 1.5px solid var(--text-dark);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.btn-outline-dark-melidan:hover {
+  background: var(--text-dark);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Barra de Navegación Inferior Móvil (Mobile Bottom Bar)
+   ========================================================================== */
+.app-bottom-bar {
+  position: sticky;
+  bottom: 0;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0.25rem;
+  z-index: 99;
+}
+
+.bottom-bar-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+.bottom-bar-btn i {
+  font-size: 1.25rem;
+}
+
+.bottom-bar-btn.active {
+  color: var(--melidan-orange);
+}
+
+/* Drawer de pruebas de roles */
+.dev-role-floater {
+  position: fixed;
+  bottom: 60px;
+  right: 15px;
+  z-index: 1000;
+}
