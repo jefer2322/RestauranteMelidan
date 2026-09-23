@@ -1,0 +1,39 @@
+/**
+ * variables.css - Design Tokens y Sistema de Estilos de Melidan
+ * Alineado exactamente con el prototipado móvil de Figma
+ */
+
+:root {
+  /* Color principal de marca Melidan (Naranja Coral vibrante del prototipo) */
+  --melidan-orange: #FF5722;
+  --melidan-orange-hover: #F4511E;
+  --melidan-orange-glow: rgba(255, 87, 34, 0.28);
+  --melidan-orange-subtle: rgba(255, 87, 34, 0.1);
+
+  /* Colores de texto del prototipo */
+  --text-primary: #0F172A;        /* Negro carbón profundo para títulos y labels */
+  --text-secondary: #64748B;      /* Gris pizarra suave para subtítulos */
+  --text-placeholder: #94A3B8;    /* Placeholder de inputs */
+  --text-muted: #94A3B8;
+
+  /* Superficies */
+  --bg-canvas: #F8FAFC;           /* Fondo exterior suave del canvas */
+  --bg-frame: #FFFFFF;            /* Fondo blanco puro del dispositivo móvil */
+  --bg-input: #FFFFFF;            /* Fondo de inputs */
+
+  /* Bordes */
+  --border-input: #E2E8F0;        /* Borde claro y limpio de inputs del prototipo */
+  --border-focus: #FF5722;
+
+  /* Tipografías */
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Radios y Elevación */
+  --radius-input: 14px;
+  --radius-btn: 14px;
+  --radius-device: 44px;
+
+  --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 10px #1E293B, 0 0 0 12px #334155;
+  --shadow-btn: 0 4px 14px rgba(255, 87, 34, 0.28);
+}

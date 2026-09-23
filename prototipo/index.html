@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Melidan - Sistema Integral de Autogestión y Control Gastronómico</title>
+  <meta name="description" content="Prototipo interactivo completo del sistema Melidan: Carta digital QR, personalización de platos, KDS de cocina, pagos digitales, monitoreo de salón, mapa de mesas y gestión de personal.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       BARRA SUPERIOR DE EVALUACIÓN Y CONTROL DEL PROTOTIPO
+       ========================================================================== -->
+  <header class="prototype-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <div class="prototype-title">
+        <span>Melidan</span><span class="prototype-dot fs-4">.</span>
+        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1 ms-1 fw-normal" style="font-size: 0.72rem;">Prototipo End-to-End • Cap. I</span>
+      </div>
+    </div>
+
+    <!-- Navegación directa entre todos los flujos del sistema -->
+    <nav class="d-flex flex-wrap align-items-center gap-1">
+      <button class="screen-switcher-btn active" data-screen="login" id="nav-btn-login" title="Pantalla de Acceso">
+        <i class="bi bi-shield-lock-fill me-1"></i> 1. Login
+      </button>
+      <button class="screen-switcher-btn" data-screen="forgot" id="nav-btn-forgot" title="Recuperar Contraseña">
+        <i class="bi bi-key-fill me-1"></i> 2. Recuperar
+      </button>
+      <button class="screen-switcher-btn" data-screen="qr" id="nav-btn-qr" title="Escanear QR de Mesa">
+        <i class="bi bi-camera-fill me-1"></i> 3. Escanear QR
+      </button>
+      <button class="screen-switcher-btn" data-screen="menu" id="nav-btn-menu" title="Carta Digital Interactiva">
+        <i class="bi bi-qr-code me-1"></i> 4. Carta QR
+      </button>
+      <button class="screen-switcher-btn" data-screen="tracker" id="nav-btn-tracker" title="Seguimiento de Pedido en Vivo">
+        <i class="bi bi-clock-history me-1"></i> 5. Seguimiento
+      </button>
+      <button class="screen-switcher-btn" data-screen="kds" id="nav-btn-kds" title="Cocina (KDS Pantalla Oscura)">
+        <i class="bi bi-fire me-1"></i> 6. Cocina KDS
+      </button>
+      <button class="screen-switcher-btn" data-screen="admin" id="nav-btn-admin" title="Dashboard del Administrador">
+        <i class="bi bi-bar-chart-fill me-1"></i> 7. Admin Salón
+      </button>
+      <button class="screen-switcher-btn" data-screen="tables" id="nav-btn-tables" title="Plano y Mapa de Mesas">
+        <i class="bi bi-grid-3x3-gap-fill me-1"></i> 8. Mapa Mesas
+      </button>
+      <button class="screen-switcher-btn" data-screen="staff" id="nav-btn-staff" title="Gestión de Personal">
+        <i class="bi bi-people-fill me-1"></i> 9. Personal
+      </button>
+    </nav>
+
+    <!-- Modos de visualización: Móvil (Figma) vs Expandido y Retorno -->
+    <div class="d-flex align-items-center gap-2">
+      <div class="view-mode-toggle btn-group" role="group">
+        <button type="button" class="btn btn-primary active" id="view-mobile-btn" title="Ver en marco móvil">
+          <i class="bi bi-phone"></i> Móvil
+        </button>
+        <button type="button" class="btn btn-outline-light" id="view-expanded-btn" title="Ver en pantalla expandida">
+          <i class="bi bi-arrows-angle-expand"></i> Expandido
+        </button>
+      </div>
+      <a href="../index.html" class="btn btn-sm btn-outline-warning text-nowrap" title="Ir al nuevo Módulo de Login Estructurado">
+        <i class="bi bi-shield-lock-fill me-1"></i> Ir al Login
+      </a>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CANVAS DEL PROTOTIPO
+       ========================================================================== -->
+  <main class="prototype-canvas">
+    
+    <!-- Marco de Smartphone iPhone (Idéntico a las capturas) -->
+    <div class="mobile-device-frame" id="device-frame">
+      
+      <!-- Barra de Estado Móvil (Hora, Wifi, Batería) -->
+      <div class="status-bar light-theme" id="status-bar">
+        <span class="live-time-display">9:41</span>
+        <div class="status-bar-icons">
+          <i class="bi bi-reception-4"></i>
+          <i class="bi bi-wifi"></i>
+          <i class="bi bi-battery-full fs-6"></i>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           1. PANTALLA: LOGIN / INICIO DE SESIÓN
+           ==================================================================== -->
+      <section class="screen-wrapper active-screen login-screen" id="screen-login">
+        <div class="login-header">
+          <h1 class="brand-logo mb-1">Melidan<span class="dot">.</span></h1>
+          <p class="login-subtitle">Ingresa para gestionar tus pedidos</p>
+        </div>
+
+        <form class="login-form" id="login-form">
+          <div>
+            <label for="login-email" class="form-label form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="login-email" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com" required>
+          </div>
+
+          <div>
+            <label for="login-password" class="form-label form-label-melidan">Contraseña</label>
+            <input type="password" id="login-password" class="form-control form-control-melidan" placeholder="••••••••" value="password123" required>
+          </div>
+
+          <button type="submit" class="btn btn-melidan-orange w-100 mt-2" id="btn-login-submit">
+            Iniciar Sesión
+          </button>
+
+          <a href="#" class="forgot-password-link" onclick="switchScreen('forgot'); return false;">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </form>
+
+        <!-- Acceso Rápido de Roles para la Demostración -->
+        <div class="quick-role-selector">
+          <span>Acceso rápido como:</span>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-secondary" onclick="switchScreen('qr')">Comensal (QR)</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="switchScreen('kds')">Cocinero (KDS)</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="switchScreen('admin')">Dueño / Admin</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           2. PANTALLA: RECUPERACIÓN DE CONTRASEÑA (FORGOT PASSWORD)
+           ==================================================================== -->
+      <section class="screen-wrapper forgot-screen" id="screen-forgot">
+        <div class="login-header mb-4">
+          <div class="brand-logo fs-2 mb-1">Melidan<span class="dot">.</span></div>
+          <h2 class="h5 fw-bold text-dark mb-1">Recuperar Contraseña</h2>
+          <p class="text-muted small">Ingresa tu correo para recibir un código de verificación</p>
+        </div>
+
+        <!-- Paso 1: Enviar correo -->
+        <div id="forgot-step-1">
+          <div class="mb-3">
+            <label class="form-label form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="forgot-email-input" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com">
+          </div>
+          <button type="button" class="btn btn-melidan-orange w-100" id="btn-send-otp">
+            Enviar Código de 6 Dígitos
+          </button>
+        </div>
+
+        <!-- Paso 2: Código OTP y Nueva Contraseña (Oculto al inicio) -->
+        <div id="forgot-step-2" style="display: none;">
+          <label class="form-label form-label-melidan">Código de Verificación (OTP)</label>
+          <div class="otp-inputs-group">
+            <input type="text" maxlength="1" class="otp-input" value="8">
+            <input type="text" maxlength="1" class="otp-input" value="4">
+            <input type="text" maxlength="1" class="otp-input" value="7">
+            <input type="text" maxlength="1" class="otp-input" value="2">
+            <input type="text" maxlength="1" class="otp-input" value="9">
+            <input type="text" maxlength="1" class="otp-input" value="1">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label form-label-melidan">Nueva Contraseña</label>
+            <input type="password" class="form-control form-control-melidan" placeholder="Mínimo 8 caracteres" value="nuevaClave2026">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label form-label-melidan">Confirmar Contraseña</label>
+            <input type="password" class="form-control form-control-melidan" placeholder="Repite tu contraseña" value="nuevaClave2026">
+          </div>
+
+          <button type="button" class="btn btn-melidan-teal w-100" id="btn-reset-password">
+            Restablecer Contraseña
+          </button>
+        </div>
+
+        <a href="#" class="forgot-password-link text-center mt-3 text-secondary" onclick="switchScreen('login'); return false;">
+          <i class="bi bi-arrow-left me-1"></i> Volver al inicio de sesión
+        </a>
+      </section>
+
+      <!-- ====================================================================
+           3. PANTALLA: SIMULADOR DE ESCANEO QR (EXPERIENCIA DE LLEGADA)
+           ==================================================================== -->
+      <section class="screen-wrapper qr-screen" id="screen-qr">
+        <div class="text-center w-100">
+          <div class="brand-logo dark fs-3 mb-1">Melidan<span class="dot">.</span></div>
+          <p class="text-white-50 small mb-0">Escaneo de Mesa en Salón</p>
+        </div>
+
+        <!-- Visor de Escaneo con Láser -->
+        <div class="scanner-viewfinder">
+          <div class="scanner-laser"></div>
+          <span class="scanner-corner corner-tl"></span>
+          <span class="scanner-corner corner-tr"></span>
+          <span class="scanner-corner corner-bl"></span>
+          <span class="scanner-corner corner-br"></span>
+          <i class="bi bi-qr-code text-white-50" style="font-size: 7rem;"></i>
+        </div>
+
+        <!-- Tarjeta de Detección de Mesa -->
+        <div class="w-100 bg-dark-subtle p-3 rounded-4 border border-secondary-subtle text-center">
+          <span class="badge bg-success mb-2 px-3 py-1"><i class="bi bi-check-circle me-1"></i> QR Detectado</span>
+          <h4 class="fw-bold text-white mb-1">Mesa #04</h4>
+          <p class="text-white-50 small mb-3">Salón Central • Atiende: María Salazar</p>
+          <button class="btn btn-melidan-orange w-100 py-3" onclick="switchScreen('menu')">
+            <i class="bi bi-journal-bookmark-fill me-2"></i> Abrir Carta Digital
+          </button>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           4. PANTALLA: CARTA DIGITAL INTERACTIVA (COMENSAL / QR)
+           ==================================================================== -->
+      <section class="screen-wrapper menu-screen" id="screen-menu">
+        <!-- Cabecera -->
+        <div class="menu-header">
+          <div class="brand-logo fs-3">Melidan<span class="dot">.</span></div>
+          <span class="badge-table">Mesa #04</span>
+        </div>
+
+        <!-- Buscador -->
+        <div class="menu-search-box">
+          <div class="search-input-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="menu-search-input" placeholder="Buscar plato o bebida...">
+          </div>
+        </div>
+
+        <!-- Categorías -->
+        <div class="category-pills-bar">
+          <button class="cat-pill active" data-category="Todos">Todos</button>
+          <button class="cat-pill" data-category="Entradas">Entradas</button>
+          <button class="cat-pill" data-category="Platos de Fondo">Platos de Fondo</button>
+          <button class="cat-pill" data-category="Bebidas">Bebidas</button>
+        </div>
+
+        <!-- Lista de Platos -->
+        <div class="menu-content">
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-headline mb-0">Populares hoy</h2>
+            <small class="text-muted"><i class="bi bi-hand-index-thumb me-1"></i>Toca para personalizar</small>
+          </div>
+          <div id="dishes-container" class="mt-2">
+            <!-- Los platos se renderizan dinámicamente con app.js -->
+          </div>
+        </div>
+
+        <!-- Barra Flotante Inferior de Pedido y Carrito -->
+        <div class="floating-cart-bar" id="floating-cart-bar" role="button">
+          <span class="cart-items-pill" id="cart-items-count">2 items</span>
+          <span class="cart-action-text">Ver Carrito</span>
+          <span class="cart-total-amount" id="cart-total-price">S/ 52.00</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           5. PANTALLA: SEGUIMIENTO DE PEDIDO EN VIVO (ORDER TRACKER)
+           ==================================================================== -->
+      <section class="screen-wrapper tracker-screen" id="screen-tracker">
+        <!-- Cabecera -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="brand-logo fs-4">Melidan<span class="dot">.</span></div>
+          <span class="badge-table">Mesa #04</span>
+        </div>
+
+        <!-- Tarjeta de Estado del Pedido -->
+        <div class="bg-light p-3 rounded-4 border mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark fs-5">Pedido #1045</span>
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1">En Cocina</span>
+          </div>
+          <p class="text-muted small mb-0">Tiempo estimado: <strong class="text-dark">12-15 min</strong></p>
+        </div>
+
+        <!-- Stepper de Progreso en Vivo -->
+        <div class="stepper-container">
+          <!-- Paso 1 -->
+          <div class="stepper-step completed">
+            <div class="stepper-icon"><i class="bi bi-check-lg"></i></div>
+            <div class="stepper-title">Pedido Confirmado y Pagado</div>
+            <div class="stepper-desc">10:45 AM • Pagado vía Yape (S/ 52.00)</div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="stepper-step current" id="step-kitchen-status">
+            <div class="stepper-icon"><i class="bi bi-fire"></i></div>
+            <div class="stepper-title">En Preparación (Cocina)</div>
+            <div class="stepper-desc">Estación Wok • El chef está preparando tus platos con las notas solicitadas.</div>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="stepper-step" id="step-ready-status">
+            <div class="stepper-icon"><i class="bi bi-bell-fill"></i></div>
+            <div class="stepper-title">¡Plato Listo para Servir!</div>
+            <div class="stepper-desc">El mozo Carlos P. lo llevará inmediatamente a tu mesa.</div>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="stepper-step">
+            <div class="stepper-icon"><i class="bi bi-cup-hot-fill"></i></div>
+            <div class="stepper-title">Entregado en Mesa</div>
+            <div class="stepper-desc">¡Buen provecho!</div>
+          </div>
+        </div>
+
+        <!-- Detalle del Consumo y Acciones Rápidas -->
+        <div class="border rounded-4 p-3 mb-3 bg-white shadow-sm">
+          <div class="fw-bold text-dark small mb-2">Platos en este pedido:</div>
+          <div class="small text-muted mb-1">• 1x Arroz con Pato <span class="text-danger fw-bold">(* Bien cocido)</span></div>
+          <div class="small text-muted mb-1">• 2x Causa Limeña</div>
+        </div>
+
+        <!-- Botones de Acción de Mesa -->
+        <div class="d-flex flex-column gap-2 mt-auto">
+          <button class="btn btn-outline-dark py-2 rounded-3 fw-bold" onclick="openReceiptModal()">
+            <i class="bi bi-receipt me-2"></i> Ver Boleta Electrónica
+          </button>
+          <button class="btn btn-outline-secondary py-2 rounded-3 fw-bold" onclick="showToast('🔔 Mozo notificado. Se acercará en unos segundos.')">
+            <i class="bi bi-bell me-2"></i> Llamar al Mozo
+          </button>
+          <button class="btn btn-link text-decoration-none text-melidan-orange fw-bold" onclick="switchScreen('menu')">
+            <i class="bi bi-plus-circle me-1"></i> Pedir algo más
+          </button>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           6. PANTALLA: VISUALIZACIÓN DE COCINA (KDS TEMA OSCURO)
+           ==================================================================== -->
+      <section class="screen-wrapper kds-screen" id="screen-kds">
+        <!-- Cabecera KDS -->
+        <div class="kds-header">
+          <div class="brand-logo dark fs-4">Melidan<span class="dot">.</span></div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="kds-station-badge">Estación: Wok</span>
+            <span class="kds-time">13:45 PM</span>
+          </div>
+        </div>
+
+        <!-- Pestañas de Filtro KDS -->
+        <div class="kds-tabs-bar">
+          <button class="kds-tab" data-tab="nuevos">Nuevos (2)</button>
+          <button class="kds-tab active" data-tab="cocinando">Cocinando (1)</button>
+          <button class="kds-tab" data-tab="listos">Listos (0)</button>
+        </div>
+
+        <!-- Lista de Comandas KDS -->
+        <div class="kds-content">
+          
+          <!-- Comanda 1: Mesa 04 -->
+          <div class="kds-order-card" id="kds-card-mesa-04">
+            <div class="kds-order-header">
+              <div>
+                <h3 class="kds-table-title">Mesa 04</h3>
+                <div class="kds-order-meta">#1045 • Cliente: María S.</div>
+              </div>
+              <span class="kds-order-time">10:45</span>
+            </div>
+
+            <div class="kds-items-list">
+              <div class="kds-item-row">
+                <span class="kds-qty">1x</span>
+                <span class="kds-dish-name">Arroz con Pato</span>
+                <span class="kds-dish-note">* Bien cocido</span>
+              </div>
+              <div class="kds-item-row">
+                <span class="kds-qty">2x</span>
+                <span class="kds-dish-name">Causa Limeña</span>
+              </div>
+            </div>
+
+            <button class="btn-kds-ready" id="btn-ready-m04">¡Plato Listo!</button>
+          </div>
+
+          <!-- Comanda 2: Mesa 08 -->
+          <div class="kds-order-card" id="kds-card-mesa-08">
+            <div class="kds-order-header">
+              <div>
+                <h3 class="kds-table-title">Mesa 08</h3>
+                <div class="kds-order-meta">#1046 • Cliente: Jorge R.</div>
+              </div>
+              <span class="kds-order-time">10:50</span>
+            </div>
+
+            <div class="kds-items-list">
+              <div class="kds-item-row">
+                <span class="kds-qty">1x</span>
+                <span class="kds-dish-name">Lomo Saltado</span>
+                <span class="kds-dish-note">* SIN PECANAS (Alergia)</span>
+              </div>
+            </div>
+
+            <button class="btn-kds-prepare" id="btn-prep-m08">Preparar Pedido</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           7. PANTALLA: DASHBOARD / MONITOREO DE SALÓN (ADMINISTRADOR)
+           ==================================================================== -->
+      <section class="screen-wrapper admin-screen" id="screen-admin">
+        <!-- Cabecera -->
+        <div class="admin-header">
+          <div class="brand-logo fs-3">Melidan<span class="dot">.</span></div>
+          <div class="user-profile-badge">
+            <span class="user-name">Don Roberto</span>
+            <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=120&q=80" alt="Don Roberto" class="user-avatar">
+          </div>
+        </div>
+
+        <div class="admin-content">
+          <!-- Título Resumen -->
+          <h2 class="section-headline mt-2 mb-3">Resumen de Hoy</h2>
+
+          <!-- Grid de Métricas (2x2) -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Ventas de Hoy</div>
+              <div class="kpi-value teal">S/ 1,450.00</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">Pedidos Activos</div>
+              <div class="kpi-value orange">12</div>
+            </div>
+
+            <div class="kpi-card" role="button" onclick="switchScreen('tables')" title="Ver Mapa de Mesas">
+              <div class="kpi-label d-flex justify-content-between align-items-center">
+                <span>Mesas Ocupadas</span>
+                <i class="bi bi-arrow-right-short text-teal"></i>
+              </div>
+              <div class="kpi-value teal">8 / 15</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">Tiempo Promedio</div>
+              <div class="kpi-value orange">14 min</div>
+            </div>
+          </div>
+
+          <!-- Monitoreo Salón -->
+          <div class="section-header-row">
+            <h3 class="section-headline m-0 fs-5">Monitoreo (Salón)</h3>
+            <a href="#" class="link-view-all" id="link-view-kds">Ver todos</a>
+          </div>
+
+          <div class="orders-list">
+            <!-- Pedido #1024 -->
+            <div class="admin-order-card">
+              <div class="admin-order-top">
+                <span class="admin-order-title">#1024 &nbsp;•&nbsp; Mesa 08</span>
+                <span class="admin-order-amount">S/ 84.00</span>
+              </div>
+              <div class="admin-order-bottom">
+                <span class="admin-order-waiter">Mozo: Carlos P.</span>
+                <span class="badge-ready">Listo para entregar</span>
+              </div>
+            </div>
+
+            <!-- Pedido #1025 -->
+            <div class="admin-order-card">
+              <div class="admin-order-top">
+                <span class="admin-order-title">#1025 &nbsp;•&nbsp; Mesa 02</span>
+                <span class="admin-order-amount">S/ 120.00</span>
+              </div>
+              <div class="admin-order-bottom">
+                <span class="admin-order-waiter">Mozo: María S.</span>
+                <span class="badge-cooking">En cocina</span>
+              </div>
+            </div>
+
+            <!-- Pedido #1026 -->
+            <div class="admin-order-card">
+              <div class="admin-order-top">
+                <span class="admin-order-title">#1026 &nbsp;•&nbsp; Mesa 11</span>
+                <span class="admin-order-amount">S/ 45.00</span>
+              </div>
+              <div class="admin-order-bottom">
+                <span class="admin-order-waiter">Mozo: Carlos P.</span>
+                <span class="badge-cooking">En cocina</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           8. PANTALLA: PLANO Y MAPA DE MESAS (Aforo en tiempo real)
+           ==================================================================== -->
+      <section class="screen-wrapper tables-screen" id="screen-tables">
+        <div class="admin-header px-0">
+          <div class="brand-logo fs-3">Melidan<span class="dot">.</span></div>
+          <button class="btn btn-sm btn-outline-secondary" onclick="switchScreen('admin')">
+            <i class="bi bi-arrow-left me-1"></i> Dashboard
+          </button>
+        </div>
+
+        <h2 class="staff-section-title mb-2">Control de Mesas y Aforo</h2>
+        <p class="text-muted small">Rotación en tiempo real para optimizar horas punta.</p>
+
+        <!-- Leyenda -->
+        <div class="tables-legend">
+          <div class="legend-item"><span class="legend-dot" style="background: #10B981;"></span> Libre (7)</div>
+          <div class="legend-item"><span class="legend-dot" style="background: #F97316;"></span> Ocupada (5)</div>
+          <div class="legend-item"><span class="legend-dot" style="background: #3B82F6;"></span> Por Limpiar (2)</div>
+          <div class="legend-item"><span class="legend-dot" style="background: #EF4444;"></span> Cuenta (1)</div>
+        </div>
+
+        <!-- Cuadrícula de 15 Mesas -->
+        <div class="tables-grid" id="tables-grid-container">
+          <!-- Generado con app.js -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           9. PANTALLA: GESTIÓN DE PERSONAL
+           ==================================================================== -->
+      <section class="screen-wrapper staff-screen" id="screen-staff">
+        <!-- Cabecera -->
+        <div class="admin-header">
+          <div class="brand-logo fs-3">Melidan<span class="dot">.</span></div>
+          <div class="user-profile-badge">
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80" alt="Administradora" class="user-avatar">
+          </div>
+        </div>
+
+        <div class="staff-content">
+          <h2 class="staff-section-title">Gestión de Personal</h2>
+
+          <h3 class="staff-subheading">Plantilla de Mozos</h3>
+          <div class="staff-list" id="staff-list-container">
+            <!-- Cargado dinámicamente con app.js -->
+          </div>
+
+          <!-- Formulario Registro Nuevo Empleado -->
+          <div class="new-staff-box">
+            <h3 class="staff-subheading mb-3">Registrar Nuevo Empleado</h3>
+            <form id="form-new-staff">
+              <div class="mb-3">
+                <label for="staff-name-input" class="form-label form-label-melidan">Nombre Completo</label>
+                <input type="text" id="staff-name-input" class="form-control form-control-melidan" placeholder="Ej. Juan Pérez" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="staff-role-select" class="form-label form-label-melidan">Rol en el Sistema</label>
+                <div class="custom-select-wrapper">
+                  <select id="staff-role-select" class="form-select form-control-melidan">
+                    <option value="Mozo / Atención de salón">Mozo / Atención de salón</option>
+                    <option value="Jefe de Cocina / Wok">Jefe de Cocina / Wok</option>
+                    <option value="Cajero / Cobranza">Cajero / Cobranza</option>
+                    <option value="Administrador">Administrador</option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-melidan-teal w-100" id="btn-save-staff">
+                Guardar Usuario
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Indicador de barra de inicio (Home indicator) -->
+      <div class="home-indicator-bar" id="home-indicator"></div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       MODAL 1: FICHA DETALLADA Y PERSONALIZACIÓN DE PLATO
+       ========================================================================== -->
+  <div class="modal fade modal-melidan" id="dishDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="position-relative">
+          <img id="detail-dish-img" src="" alt="Plato" class="dish-detail-hero">
+          <button type="button" class="btn-close bg-white rounded-circle position-absolute top-0 end-0 m-3 p-2 shadow" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body px-4 pt-3 pb-2">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h4 class="fw-bold text-dark mb-1" id="detail-dish-name">Lomo Saltado</h4>
+              <span class="badge bg-light text-muted border" id="detail-dish-category">Platos de Fondo</span>
+            </div>
+            <span class="fs-4 fw-bold" style="color: var(--melidan-orange);" id="detail-dish-price">S/ 28.00</span>
+          </div>
+
+          <p class="text-muted small mb-3" id="detail-dish-desc">Descripción</p>
+
+          <!-- Sellos de Alérgenos y Preferencias -->
+          <div class="d-flex gap-2 flex-wrap mb-3" id="detail-allergen-tags">
+            <span class="allergen-pill allergen-warning"><i class="bi bi-exclamation-triangle-fill"></i> Nueces / Pecanas</span>
+            <span class="allergen-pill allergen-tag"><i class="bi bi-fire"></i> Picante Medio</span>
+          </div>
+
+          <!-- Modificador: Término de Cocción -->
+          <div id="section-cooking-preference" class="mb-3">
+            <label class="form-label form-label-melidan">Término de la carne</label>
+            <div class="option-select-card" data-val="Término Medio">
+              <span>Término Medio (Jugoso)</span>
+              <i class="bi bi-circle text-muted"></i>
+            </div>
+            <div class="option-select-card active" data-val="Tres Cuartos">
+              <span class="fw-bold">Tres Cuartos (Recomendado)</span>
+              <i class="bi bi-check-circle-fill" style="color: var(--melidan-orange);"></i>
+            </div>
+            <div class="option-select-card" data-val="Bien Cocido">
+              <span>Bien Cocido</span>
+              <i class="bi bi-circle text-muted"></i>
+            </div>
+          </div>
+
+          <!-- Modificador: Guarnición -->
+          <div class="mb-3">
+            <label class="form-label form-label-melidan">Elección de Guarnición</label>
+            <div class="option-select-card active" data-val="Papas Fritas y Arroz">
+              <span class="fw-bold">Papas Amarillas Fritas + Arroz</span>
+              <i class="bi bi-check-circle-fill" style="color: var(--melidan-orange);"></i>
+            </div>
+            <div class="option-select-card" data-val="Ensalada Fresca">
+              <span>Ensalada Fresca de la Casa</span>
+              <i class="bi bi-circle text-muted"></i>
+            </div>
+          </div>
+
+          <!-- Campo de Notas para Cocina / Alergias -->
+          <div class="mb-3">
+            <label for="detail-kitchen-notes" class="form-label form-label-melidan">
+              Instrucciones para Cocina / Alergias
+            </label>
+            <input type="text" id="detail-kitchen-notes" class="form-control form-control-melidan" placeholder="Ej: SIN PECANAS (Alergia), bien cocido...">
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 px-4 pb-4 pt-1 d-flex justify-content-between align-items-center">
+          <!-- Stepper Cantidad -->
+          <div class="qty-stepper">
+            <button class="qty-btn" id="btn-decrease-qty">-</button>
+            <span class="fw-bold px-2" id="detail-qty-display">1</span>
+            <button class="qty-btn" id="btn-increase-qty">+</button>
+          </div>
+
+          <!-- Botón Agregar -->
+          <button class="btn btn-melidan-orange px-4 py-2" id="btn-add-custom-dish">
+            Agregar a la orden
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: CARRITO Y PAGO DIGITAL (OBJETIVO 2: DESCONGESTIONAR CAJA)
+       ========================================================================== -->
+  <div class="modal fade modal-melidan" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="modal-title fw-bold">Tu Pedido • Mesa #04</h5>
+            <small class="text-muted">Autogestión de pedido y pago rápido</small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body px-4">
+          <!-- Detalle de platos -->
+          <div class="mb-3" id="modal-cart-items-list"></div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
+            <span class="fs-5 fw-bold text-dark">Total a Pagar</span>
+            <span class="fs-4 fw-bold" id="modal-cart-total" style="color: var(--melidan-orange);">S/ 52.00</span>
+          </div>
+
+          <!-- Selección de Método de Pago Digital -->
+          <h6 class="fw-bold text-dark mb-2">Método de Pago Digital</h6>
+          <p class="text-muted small mb-3">Paga directamente sin esperar al mozo ni hacer cola en caja.</p>
+
+          <div class="payment-method-card active" data-method="yape">
+            <div class="payment-method-icon icon-yape">Y</div>
+            <div class="flex-grow-1">
+              <div class="fw-bold text-dark">Yape</div>
+              <small class="text-muted">Pago instantáneo con QR o número</small>
+            </div>
+            <i class="bi bi-check-circle-fill fs-5" style="color: var(--melidan-orange);"></i>
+          </div>
+
+          <div class="payment-method-card" data-method="plin">
+            <div class="payment-method-icon icon-plin">P</div>
+            <div class="flex-grow-1">
+              <div class="fw-bold text-dark">Plin</div>
+              <small class="text-muted">Transferencia sin comisiones</small>
+            </div>
+            <i class="bi bi-circle text-muted fs-5"></i>
+          </div>
+
+          <div class="payment-method-card" data-method="card">
+            <div class="payment-method-icon icon-card"><i class="bi bi-credit-card"></i></div>
+            <div class="flex-grow-1">
+              <div class="fw-bold text-dark">Tarjeta Débito / Crédito</div>
+              <small class="text-muted">Visa, Mastercard, Amex</small>
+            </div>
+            <i class="bi bi-circle text-muted fs-5"></i>
+          </div>
+
+          <div class="payment-method-card" data-method="cash">
+            <div class="payment-method-icon icon-cash"><i class="bi bi-cash-coin"></i></div>
+            <div class="flex-grow-1">
+              <div class="fw-bold text-dark">Efectivo en Mesa</div>
+              <small class="text-muted">Un mozo se acercará con tu cambio</small>
+            </div>
+            <i class="bi bi-circle text-muted fs-5"></i>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 pt-0 px-4 pb-4">
+          <button type="button" class="btn btn-melidan-orange w-100 py-3" id="btn-confirm-order-payment">
+            <i class="bi bi-send-check me-2"></i> Confirmar Pedido y Pagar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: COMPROBANTE / BOLETA DE VENTA ELECTRÓNICA SUNAT
+       ========================================================================== -->
+  <div class="modal fade modal-melidan" id="receiptModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="fw-bold">Comprobante de Pago Digital</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body px-4 pt-2">
+          <div class="receipt-paper">
+            <div class="receipt-header">
+              <h5 class="fw-bold mb-0">MELIDAN RESTAURANTE</h5>
+              <div class="small">R.U.C. 20608945231</div>
+              <div class="small">Av. Gastronomía 1045, Lima</div>
+              <div class="fw-bold mt-2">BOLETA DE VENTA ELECTRÓNICA</div>
+              <div class="small">B001-00049281</div>
+            </div>
+
+            <div class="receipt-line">
+              <span>Fecha:</span>
+              <span id="receipt-date">23/09/2026 10:45 AM</span>
+            </div>
+            <div class="receipt-line">
+              <span>Mesa:</span>
+              <span class="fw-bold">Mesa #04</span>
+            </div>
+            <div class="receipt-line">
+              <span>Cliente:</span>
+              <span>María S. (DNI: 74829103)</span>
+            </div>
+            <div class="receipt-line mb-3">
+              <span>Método:</span>
+              <span class="fw-bold text-success">YAPE (Op. 847291)</span>
+            </div>
+
+            <div class="border-top pt-2" id="receipt-items-container">
+              <div class="receipt-line">
+                <span>1x Arroz con Pato</span>
+                <span>S/ 36.00</span>
+              </div>
+              <div class="receipt-line">
+                <span>2x Causa Limeña</span>
+                <span>S/ 36.00</span>
+              </div>
+            </div>
+
+            <div class="receipt-line border-top pt-2">
+              <span>Op. Gravada:</span>
+              <span>S/ 44.07</span>
+            </div>
+            <div class="receipt-line">
+              <span>I.G.V. (18%):</span>
+              <span>S/ 7.93</span>
+            </div>
+            <div class="receipt-total-line">
+              <span>TOTAL PAGADO:</span>
+              <span>S/ 52.00</span>
+            </div>
+
+            <div class="text-center mt-3 pt-2 border-top">
+              <i class="bi bi-qr-code fs-1"></i>
+              <div class="small mt-1" style="font-size: 0.72rem;">Representación impresa autorizada por SUNAT</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex gap-2">
+          <button class="btn btn-outline-dark flex-grow-1" onclick="showToast('📥 Descargando Boleta B001-00049281 en PDF...')">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Descargar PDF
+          </button>
+          <button class="btn btn-success flex-grow-1" onclick="showToast('📲 Boleta enviada al WhatsApp del cliente con éxito.')">
+            <i class="bi bi-whatsapp me-1"></i> Enviar WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 4: CRONOGRAMA DE HORARIOS Y TURNOS DEL PERSONAL
+       ========================================================================== -->
+  <div class="modal fade modal-melidan" id="staffScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="fw-bold mb-0">Horarios y Turnos Semanales</h5>
+            <small class="text-muted" id="schedule-staff-name">Carlos Paredes</small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body px-4 pt-3">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm align-middle text-center small">
+              <thead class="table-light">
+                <tr>
+                  <th>Día</th>
+                  <th>Turno</th>
+                  <th>Horario</th>
+                  <th>Estación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Lun</td><td><span class="badge bg-success">Mañana</span></td><td>8:00 - 16:00</td><td>Salón A</td></tr>
+                <tr><td>Mar</td><td><span class="badge bg-success">Mañana</span></td><td>8:00 - 16:00</td><td>Salón A</td></tr>
+                <tr><td>Mié</td><td><span class="badge bg-success">Mañana</span></td><td>8:00 - 16:00</td><td>Terraza</td></tr>
+                <tr><td>Jue</td><td><span class="badge bg-secondary">Descanso</span></td><td>-</td><td>-</td></tr>
+                <tr><td>Vie</td><td><span class="badge bg-warning text-dark">Punta</span></td><td>11:00 - 19:00</td><td>Salón A</td></tr>
+                <tr><td>Sáb</td><td><span class="badge bg-warning text-dark">Punta</span></td><td>11:00 - 19:00</td><td>Salón Central</td></tr>
+                <tr><td>Dom</td><td><span class="badge bg-success">Mañana</span></td><td>8:00 - 16:00</td><td>Salón Central</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-0 px-4 pb-4">
+          <button class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- App JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>
