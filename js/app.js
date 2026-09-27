@@ -504,6 +504,26 @@ class AppController {
     }, 2800);
   }
 
+
+logout() {
+  
+    window.AuthService.logout();
+
+
+    this.currentRecoveryEmail = '';
+    this.currentRecoveryCode = '';
+
+
+    const passwordInput = document.getElementById('login-password');
+    if (passwordInput) {
+        passwordInput.value = '';
+    }
+
+    this.showScreen('login');
+
+    this.showToast('Sesión cerrada correctamente.');
+}
+
   quickLogin(email, password) {
     const elEmail = document.getElementById('login-email');
     const elPass = document.getElementById('login-password');

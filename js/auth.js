@@ -12,11 +12,25 @@ class AuthService {
    * @param {string} email
    * @param {string} password
    */
-  static async login(email, password) {
+static async login(email, password) {
     const cleanEmail = (email || '').trim().toLowerCase();
-    if (!cleanEmail) throw new Error('Ingresa un correo electrónico.');
-    if (!password) throw new Error('Ingresa tu contraseña.');
 
+    // Validar que el correo no esté vacío
+    if (!cleanEmail) {
+        throw new Error('Ingresa un correo electrónico.');
+    }
+
+    // Validar formato del correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(cleanEmail)) {
+        throw new Error('Ingresa un correo electrónico válido, por ejemplo: usuario@gmail.com');
+    }
+
+    // Validar que la contraseña no esté vacía
+    if (!password) {
+        throw new Error('Ingresa tu contraseña.');
+    }
     // 1. Intentar autenticar contra PostgreSQL
     if (window.db && window.db.isPostgresConnected) {
       try {
