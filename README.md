@@ -23,19 +23,19 @@ Sistema integral para restaurantes (Administración, KDS de Cocina, Gestión de 
 
 ---
 
-## 👥 Usuarios de Prueba Registrados en PostgreSQL
+## 👥 Control de Acceso por Roles (RBAC) en PostgreSQL
 
 Todas las cuentas vienen configuradas con la contraseña **`password123`**:
 
-| Usuario | Correo | Rol en BD | Pantalla Asignada |
-|---|---|---|---|
-| **Don Roberto** | `admin@melidan.com` | `administrador` | Panel de Administrador (Métricas y Salón) |
-| **Marco Antonio (Chef)** | `chef@melidan.com` | `cocina` | Cocina KDS (Comandas activas) |
-| **Carlos Paredes** | `carlos.p@melidan.com` | `mozo` | Gestión de Salón / Personal |
-| **María Salazar** | `maria.s@melidan.com` | `mozo` | Gestión de Salón / Personal |
-| **Jorge Ruiz** | `jorge.r@melidan.com` | `mozo` | Inactivo (Pruebas de estado) |
+| Usuario | Correo | Rol en BD | Apartado Permitido | Pestañas Visibles |
+|---|---|---|---|---|
+| **Marco Antonio (Chef)** | `chef@melidan.com` | `cocina` | **Solo Cocina KDS** | `Cocina`, `Salir` |
+| **Carlos Paredes** | `carlos.p@melidan.com` | `mozo` | **Solo Salón (Carta QR y Tracker)** | `Carta QR`, `Tracker`, `Salir` |
+| **María Salazar** | `maria.s@melidan.com` | `mozo` | **Solo Salón (Carta QR y Tracker)** | `Carta QR`, `Tracker`, `Salir` |
+| **Lucía Ramos (Caja)** | `caja@melidan.com` | `cajero` | **Solo Facturación y Tracker** | `Tracker`, `Carta QR`, `Salir` |
+| **Don Roberto** | `admin@melidan.com` | `administrador` | **Acceso Total** | `Admin`, `Personal`, `Cocina`, `Carta QR`, `Tracker`, `Salir` |
 
----
+> 🔒 **Seguridad y Bloqueo de Rutas:** Si un mozo o cocinero intenta acceder a una sección no autorizada (por ejemplo el cocinero queriendo entrar a administración o a la carta), el sistema bloquea inmediatamente la navegación, muestra una advertencia emergente y lo devuelve a su apartado asignado.
 
 ## 📁 Arquitectura del Proyecto
 

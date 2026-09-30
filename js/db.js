@@ -1,7 +1,7 @@
 /**
  * db.js - Conexión de Datos para Melidan
- * Conectado a la Base de Datos PostgreSQL 18 (melidan_db) mediante REST API.
- * Cuenta con sincronización en tiempo real y fallback automático a LocalStorage.
+ * Conectado a la Base de Datos PostgreSQL 18 (Melidan_db) mediante REST API.
+ * Sincronización en tiempo real y fallback automático si no hay servidor local.
  */
 
 class MelidanDB {
@@ -20,19 +20,18 @@ class MelidanDB {
   async init() {
     if (this.initialized) return;
 
-    // Verificar si la API PostgreSQL está disponible
     try {
       const res = await fetch(`${this.apiBase}/dashboard.php`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
           this.isPostgresConnected = true;
-          console.log('%c[MelidanDB] Conectado exitosamente a PostgreSQL 18 (melidan_db)', 'color: #00897B; font-weight: bold;');
+          console.log('%c[MelidanDB] Conectado exitosamente a PostgreSQL 18 (Melidan_db)', 'color: #009B77; font-weight: bold;');
           this.updateConnectionBadge(true);
         }
       }
     } catch (e) {
-      console.warn('[MelidanDB] API PostgreSQL no disponible en entorno estático. Usando persistencia local.');
+      console.warn('[MelidanDB] Servidor API local no detectado. Usando caché local.');
       this.isPostgresConnected = false;
       this.updateConnectionBadge(false);
     }
@@ -52,7 +51,7 @@ class MelidanDB {
     const badges = document.querySelectorAll('.db-status-badge');
     badges.forEach(badge => {
       if (connected) {
-        badge.innerHTML = `<span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)`;
+        badge.innerHTML = `<span class="badge-dot-green"></span> PostgreSQL 18 Conectado (Melidan_db)`;
         badge.className = 'db-status-badge db-connected';
       } else {
         badge.innerHTML = `<span class="badge-dot-amber"></span> Modo Local (Simulado)`;
@@ -69,31 +68,35 @@ class MelidanDB {
    * Obtiene métricas y monitoreo de salón desde PostgreSQL
    */
   async getDashboard() {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/dashboard.php`);
+    try {
+      const res = await fetch(`${this.apiBase}/dashboard.php`, { cache: 'no-store' });
+      if (res.ok) {
         const json = await res.json();
-        if (json.success) return json;
-      } catch (err) {
-        console.error('[MelidanDB] Error en getDashboard API:', err);
+        if (json.success) {
+          this.isPostgresConnected = true;
+          this.updateConnectionBadge(true);
+          return json;
+        }
       }
+    } catch (err) {
+      console.warn('[MelidanDB] Fallback local para getDashboard:', err);
     }
+
     // Fallback Local
     return {
       success: true,
       metrics: {
-        ventas_hoy: 1450.00,
-        ventas_hoy_formato: 'S/ 1,450.00',
-        pedidos_activos: 12,
-        mesas_ocupadas: 8,
-        total_mesas: 15,
-        mesas_texto: '8 / 15',
+        ventas_hoy: 52.00,
+        ventas_hoy_formato: 'S/ 52.00',
+        pedidos_activos: 2,
+        mesas_ocupadas: 2,
+        total_mesas: 5,
+        mesas_texto: '2 / 5',
         tiempo_promedio: '14 min'
       },
       salon_monitor: [
-        { id_pedido: 1024, numero_comanda: 1024, numero_mesa: 8, total: '84.00', mozo_nombre: 'Carlos P.', badge_text: 'Listo para entregar', estado: 'listo' },
-        { id_pedido: 1025, numero_comanda: 1025, numero_mesa: 2, total: '48.00', mozo_nombre: 'María S.', badge_text: 'En cocina', estado: 'en_cocina' },
-        { id_pedido: 1026, numero_comanda: 1026, numero_mesa: 11, total: '64.00', mozo_nombre: 'Carlos P.', badge_text: 'Listo para entregar', estado: 'listo' }
+        { id_pedido: 1, numero_comanda: 1024, numero_mesa: 2, total: '48.00', mozo_nombre: 'Carlos Paredes', badge_text: 'En cocina', estado: 'en_cocina' },
+        { id_pedido: 2, numero_comanda: 1025, numero_mesa: 4, total: '52.00', mozo_nombre: 'María Salazar', badge_text: 'Listo para entregar', estado: 'listo' }
       ]
     };
   }
@@ -102,16 +105,18 @@ class MelidanDB {
    * Obtiene la plantilla de personal desde PostgreSQL (tabla usuarios)
    */
   async getStaff() {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/staff.php`);
+    try {
+      const res = await fetch(`${this.apiBase}/staff.php`, { cache: 'no-store' });
+      if (res.ok) {
         const json = await res.json();
         if (json.success && json.staff) {
+          this.isPostgresConnected = true;
+          this.updateConnectionBadge(true);
           return json.staff;
         }
-      } catch (err) {
-        console.error('[MelidanDB] Error en getStaff API:', err);
       }
+    } catch (err) {
+      console.warn('[MelidanDB] Fallback local para getStaff:', err);
     }
     return this.get('staff', []);
   }
@@ -120,48 +125,48 @@ class MelidanDB {
    * Registra un nuevo empleado en PostgreSQL (INSERT INTO usuarios)
    */
   async insertStaff(employeeData) {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/staff.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(employeeData)
-        });
-        const json = await res.json();
-        if (json.success && json.member) {
-          // Mantener sincronizado localmente
-          const localStaff = this.get('staff', []);
-          localStaff.push(json.member);
-          this.set('staff', localStaff);
-          return json.member;
-        } else {
-          throw new Error(json.message || 'Error al guardar empleado');
-        }
-      } catch (err) {
-        console.error('[MelidanDB] Fallo al insertar personal en PostgreSQL:', err);
-        throw err;
+    try {
+      const res = await fetch(`${this.apiBase}/staff.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(employeeData)
+      });
+      const json = await res.json();
+      if (json.success && json.member) {
+        this.isPostgresConnected = true;
+        this.updateConnectionBadge(true);
+        const localStaff = this.get('staff', []);
+        localStaff.push(json.member);
+        this.set('staff', localStaff);
+        return json.member;
+      } else {
+        throw new Error(json.message || 'Error al guardar empleado');
       }
+    } catch (err) {
+      if (err.message && err.message.includes('Ya existe')) throw err;
+      console.warn('[MelidanDB] Fallo al insertar personal en PostgreSQL, guardando localmente:', err);
     }
 
     // Fallback Local
-    const local = await this.insert('staff', employeeData);
-    return local;
+    return await this.insert('staff', employeeData);
   }
 
   /**
    * Obtiene las comandas activas desde PostgreSQL
    */
   async getOrders() {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/orders.php`);
+    try {
+      const res = await fetch(`${this.apiBase}/orders.php`, { cache: 'no-store' });
+      if (res.ok) {
         const json = await res.json();
         if (json.success && json.orders) {
+          this.isPostgresConnected = true;
+          this.updateConnectionBadge(true);
           return json.orders;
         }
-      } catch (err) {
-        console.error('[MelidanDB] Error en getOrders API:', err);
       }
+    } catch (err) {
+      console.warn('[MelidanDB] Fallback local para getOrders:', err);
     }
     return this.get('orders', []);
   }
@@ -170,16 +175,19 @@ class MelidanDB {
    * Actualiza el estado de una comanda en PostgreSQL
    */
   async updateOrderStatus(orderId, status) {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/orders.php?id=${encodeURIComponent(orderId)}&status=${encodeURIComponent(status)}`, {
-          method: 'PUT'
-        });
-        const json = await res.json();
-        if (json.success) return json.order;
-      } catch (err) {
-        console.error('[MelidanDB] Error actualizando comanda en PostgreSQL:', err);
+    try {
+      const res = await fetch(`${this.apiBase}/orders.php?id=${encodeURIComponent(orderId)}&status=${encodeURIComponent(status)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_pedido: orderId, status: status })
+      });
+      const json = await res.json();
+      if (json.success) {
+        this.isPostgresConnected = true;
+        return json.order;
       }
+    } catch (err) {
+      console.warn('[MelidanDB] Error actualizando comanda en PostgreSQL:', err);
     }
 
     // Fallback Local
@@ -188,21 +196,89 @@ class MelidanDB {
   }
 
   /**
+   * Crea una nueva comanda en PostgreSQL
+   */
+  async createOrder(orderData) {
+    try {
+      const res = await fetch(`${this.apiBase}/orders.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      const json = await res.json();
+      if (json.success && json.order) {
+        this.isPostgresConnected = true;
+        return json.order;
+      }
+      throw new Error(json.message || 'Error al crear pedido en PostgreSQL');
+    } catch (err) {
+      if (err.message && err.message.includes('contener al menos')) throw err;
+      console.warn('[MelidanDB] Error creando comanda en PostgreSQL:', err);
+    }
+
+    return await this.insert('orders', orderData);
+  }
+
+  /**
    * Obtiene la carta de productos desde PostgreSQL
    */
   async getProducts() {
-    if (this.isPostgresConnected) {
-      try {
-        const res = await fetch(`${this.apiBase}/products.php`);
+    try {
+      const res = await fetch(`${this.apiBase}/products.php`, { cache: 'no-store' });
+      if (res.ok) {
         const json = await res.json();
         if (json.success && json.productos) {
+          this.isPostgresConnected = true;
+          this.updateConnectionBadge(true);
           return json.productos;
         }
-      } catch (err) {
-        console.error('[MelidanDB] Error en getProducts API:', err);
       }
+    } catch (err) {
+      console.warn('[MelidanDB] Fallback local para getProducts:', err);
     }
     return this.get('dishes', []);
+  }
+
+  /**
+   * Obtiene las categorías del menú desde PostgreSQL
+   */
+  async getCategories() {
+    try {
+      const res = await fetch(`${this.apiBase}/products.php`, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.categorias) {
+          return json.categorias;
+        }
+      }
+    } catch (err) {
+      console.warn('[MelidanDB] Fallback local para getCategories:', err);
+    }
+    return [
+      { id_categoria: 1, nombre: 'Especialidades al Horno' },
+      { id_categoria: 2, nombre: 'Platos de Fondo' },
+      { id_categoria: 3, nombre: 'Bebidas' },
+      { id_categoria: 4, nombre: 'Postres' }
+    ];
+  }
+
+  /**
+   * Obtiene el comprobante electrónico desde PostgreSQL (tablas comprobantes + ventas)
+   */
+  async getReceipt(orderId = 0) {
+    try {
+      const url = orderId > 0 ? `${this.apiBase}/billing.php?id_pedido=${orderId}` : `${this.apiBase}/billing.php`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.receipt) {
+          return json.receipt;
+        }
+      }
+    } catch (err) {
+      console.warn('[MelidanDB] Error al obtener comprobante en PostgreSQL:', err);
+    }
+    return null;
   }
 
   // ==========================================
@@ -299,7 +375,7 @@ class MelidanDB {
       },
       {
         id: 'usr_chef',
-        name: 'Marco Antonio',
+        name: 'Marco Antonio (Chef)',
         email: 'chef@melidan.com',
         password: 'password123',
         role: 'CHEF',
@@ -314,20 +390,41 @@ class MelidanDB {
         role: 'WAITER',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
         status: 'active'
+      },
+      {
+        id: 'usr_moza',
+        name: 'María Salazar',
+        email: 'maria.s@melidan.com',
+        password: 'password123',
+        role: 'WAITER',
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
+        status: 'active'
+      },
+      {
+        id: 'usr_caja',
+        name: 'Lucía Ramos (Caja)',
+        email: 'caja@melidan.com',
+        password: 'password123',
+        role: 'CASHIER',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
+        status: 'active'
       }
     ];
 
     const staff = [
-      { id: 1, name: 'Carlos Paredes', email: 'carlos.p@melidan.com', role: 'Mozo / Salón', shift: 'Turno Mañana (8:00 AM - 4:00 PM)', status: 'Activo' },
-      { id: 2, name: 'María Salazar', email: 'maria.s@melidan.com', role: 'Mozo / Salón', shift: 'Turno Tarde (4:00 PM - 12:00 AM)', status: 'Activo' },
-      { id: 3, name: 'Jorge Ruiz', email: 'jorge.r@melidan.com', role: 'Mozo / Salón', shift: 'Turno Rotativo', status: 'Inactivo' }
+      { id: 1, name: 'Don Roberto', email: 'admin@melidan.com', role: 'Administrador', shift: 'Turno Completo / Gerencia', status: 'Activo' },
+      { id: 2, name: 'Marco Antonio (Chef)', email: 'chef@melidan.com', role: 'Cocinero / Chef', shift: 'Turno Mañana (7:00 AM - 3:00 PM)', status: 'Activo' },
+      { id: 3, name: 'Carlos Paredes', email: 'carlos.p@melidan.com', role: 'Mozo / Salón', shift: 'Turno Mañana (8:00 AM - 4:00 PM)', status: 'Activo' },
+      { id: 4, name: 'María Salazar', email: 'maria.s@melidan.com', role: 'Mozo / Salón', shift: 'Turno Tarde (4:00 PM - 12:00 AM)', status: 'Activo' },
+      { id: 5, name: 'Jorge Ruiz', email: 'jorge.r@melidan.com', role: 'Mozo / Salón', shift: 'Turno Rotativo', status: 'Inactivo' }
     ];
 
     const dishes = [
-      { id: 1, name: 'Lechón a Fuego Lento', category: 'Platos de Fondo', price: 48.00, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80' },
-      { id: 2, name: 'Costillar Glaseado', category: 'Platos de Fondo', price: 42.00, image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=600&q=80' },
-      { id: 3, name: 'Lomo Saltado', category: 'Platos de Fondo', price: 38.00, image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80' },
-      { id: 4, name: 'Chicha Morada (1L)', category: 'Bebidas', price: 14.00, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80' }
+      { id: 1, name: 'Lechón a Fuego Lento', category: 'Especialidades al Horno', categoria_nombre: 'Especialidades al Horno', price: 48.00, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80', popular: true },
+      { id: 2, name: 'Costillar Glaseado a la Leña', category: 'Especialidades al Horno', categoria_nombre: 'Especialidades al Horno', price: 42.00, image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=400&q=80', popular: true },
+      { id: 3, name: 'Lomo Saltado Tradicional', category: 'Platos de Fondo', categoria_nombre: 'Platos de Fondo', price: 38.00, image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80', popular: true },
+      { id: 4, name: 'Ají de Gallina Cremoso', category: 'Platos de Fondo', categoria_nombre: 'Platos de Fondo', price: 28.00, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&q=80', popular: false },
+      { id: 5, name: 'Chicha Morada Artesanal (1L)', category: 'Bebidas', categoria_nombre: 'Bebidas', price: 14.00, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80', popular: true }
     ];
 
     this.set('users', users);

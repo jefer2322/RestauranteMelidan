@@ -39,14 +39,18 @@ function handleGetOrders($db) {
             m.numero_mesa,
             p.id_usuario,
             p.nombre_cliente,
-            p.mozo_nombre,
-            p.total,
+            COALESCE(u.nombre, 'Mozo de Turno') AS mozo_nombre,
+            COALESCE(
+                (SELECT SUM(dp.cantidad * dp.precio_unitario) FROM detalle_pedidos dp WHERE dp.id_pedido = p.id_pedido),
+                0.00
+            ) AS total,
             p.estado,
             p.fecha_hora,
             TO_CHAR(p.fecha_hora, 'HH12:MI AM') AS hora_formato,
             ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - p.fecha_hora)) / 60) AS minutos_transcurridos
         FROM pedidos p
         LEFT JOIN mesas m ON p.id_mesa = m.id_mesa
+        LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
         ORDER BY p.id_pedido DESC
     ");
     $orders = $stmt->fetchAll();
@@ -153,7 +157,7 @@ function handleCreateOrder($db) {
 
     $tableNum = intval($input['table_num'] ?? 4);
     $clientName = trim($input['client_name'] ?? 'Cliente Mesa ' . $tableNum);
-    $waiterName = trim($input['waiter_name'] ?? 'Carlos P.');
+    $waiterName = trim($input['waiter_name'] ?? 'Carlos Paredes');
     $items = $input['items'] ?? [];
 
     if (empty($items)) {
@@ -164,7 +168,19 @@ function handleCreateOrder($db) {
     $stmtTable = $db->prepare("SELECT id_mesa FROM mesas WHERE numero_mesa = :num LIMIT 1");
     $stmtTable->execute(['num' => $tableNum]);
     $table = $stmtTable->fetch();
-    $idMesa = $table ? $table['id_mesa'] : 4;
+    $idMesa = $table ? $table['id_mesa'] : 1;
+
+    // Buscar ID de usuario (mozo)
+    $waiterId = !empty($input['id_usuario']) ? intval($input['id_usuario']) : null;
+    if (!$waiterId && !empty($waiterName)) {
+        $stmtU = $db->prepare("SELECT id_usuario FROM usuarios WHERE LOWER(nombre) LIKE LOWER(:name) LIMIT 1");
+        $stmtU->execute(['name' => '%' . $waiterName . '%']);
+        $waiterId = $stmtU->fetchColumn() ?: null;
+    }
+    if (!$waiterId) {
+        $stmtMozo = $db->query("SELECT id_usuario FROM usuarios WHERE rol = 'mozo' LIMIT 1");
+        $waiterId = $stmtMozo->fetchColumn() ?: null;
+    }
 
     // Generar nuevo número de comanda
     $stmtMax = $db->query("SELECT COALESCE(MAX(numero_comanda), 1050) + 1 AS next_comanda FROM pedidos");
@@ -177,18 +193,17 @@ function handleCreateOrder($db) {
             $total += ($item['precio'] ?? $item['price'] ?? 0) * ($item['cantidad'] ?? $item['qty'] ?? 1);
         }
 
-        // Insertar en pedidos
+        // Insertar en pedidos (esquema normalizado 3FN)
         $stmtOrder = $db->prepare("
-            INSERT INTO pedidos (numero_comanda, id_mesa, nombre_cliente, mozo_nombre, total, estado)
-            VALUES (:comanda, :mesa, :cliente, :mozo, :total, 'pendiente')
+            INSERT INTO pedidos (numero_comanda, id_mesa, id_usuario, nombre_cliente, estado)
+            VALUES (:comanda, :mesa, :usuario, :cliente, 'pendiente')
             RETURNING id_pedido
         ");
         $stmtOrder->execute([
             'comanda' => $nextComanda,
             'mesa' => $idMesa,
-            'cliente' => $clientName,
-            'mozo' => $waiterName,
-            'total' => $total
+            'usuario' => $waiterId,
+            'cliente' => $clientName
         ]);
         $orderId = $stmtOrder->fetchColumn();
 

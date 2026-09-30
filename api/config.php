@@ -6,7 +6,7 @@
 
 define('DB_HOST', 'localhost');
 define('DB_PORT', '5432');
-define('DB_NAME', 'melidan_db');
+define('DB_NAME', 'Melidan_db');
 define('DB_USER', 'postgres');
 define('DB_PASS', 'root');
 
@@ -29,18 +29,28 @@ function setupApiHeaders() {
 function getDBConnection() {
     static $pdo = null;
     if ($pdo === null) {
-        $dsn = sprintf("pgsql:host=%s;port=%s;dbname=%s", DB_HOST, DB_PORT, DB_NAME);
-        try {
-            $pdo = new PDO($dsn, DB_USER, DB_PASS, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
-        } catch (PDOException $e) {
+        $dbNames = [DB_NAME, 'melidan_db'];
+        $lastException = null;
+
+        foreach ($dbNames as $name) {
+            $dsn = sprintf("pgsql:host=%s;port=%s;dbname=%s", DB_HOST, DB_PORT, $name);
+            try {
+                $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]);
+                break;
+            } catch (PDOException $e) {
+                $lastException = $e;
+            }
+        }
+
+        if ($pdo === null) {
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Error al conectar con la base de datos PostgreSQL: ' . $e->getMessage()
+                'message' => 'Error al conectar con la base de datos PostgreSQL: ' . ($lastException ? $lastException->getMessage() : 'Error desconocido')
             ], JSON_UNESCAPED_UNICODE);
             exit();
         }

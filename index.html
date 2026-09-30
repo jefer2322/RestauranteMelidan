@@ -37,7 +37,7 @@
           <p class="brand-subtitle">Ingresa para gestionar tus pedidos</p>
           <div class="mt-2 text-center">
             <span class="db-status-badge db-connected" id="login-db-badge">
-              <span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)
+              <span class="badge-dot-green"></span> PostgreSQL 18 Conectado (Melidan_db)
             </span>
           </div>
         </div>
@@ -161,12 +161,17 @@
         <div>
           <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
           <span class="db-status-badge db-connected mt-1">
-            <span class="badge-dot-green"></span> PostgreSQL 18
+            <span class="badge-dot-green"></span> PostgreSQL 18 (Melidan_db)
           </span>
         </div>
-        <div class="user-profile">
-          <span class="user-name">Don Roberto</span>
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="admin-user-avatar">
+        <div class="user-profile text-end">
+          <div class="d-flex align-items-center gap-2">
+            <div class="text-end">
+              <div class="user-name fw-bold" id="admin-user-name">Don Roberto</div>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle" id="admin-role-badge">👑 Administrador</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="admin-user-avatar">
+          </div>
         </div>
       </div>
 
@@ -256,8 +261,16 @@
     <section class="view-screen" id="screen-staff">
       <!-- Cabecera -->
       <div class="admin-header border-bottom">
-        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1" id="staff-role-badge">👑 Panel de Administración</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="text-end">
+            <span class="user-name fw-bold" id="staff-header-user-name">Don Roberto</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="staff-user-avatar">
+        </div>
       </div>
 
       <div class="px-3 py-3 flex-grow-1">
@@ -303,8 +316,14 @@
       <div class="kds-view-container flex-grow-1">
         <!-- Cabecera KDS Oscura -->
         <div class="kds-header">
-          <h2 class="brand-title mb-0 fs-2 text-white">Melidan<span class="brand-dot">.</span></h2>
-          <div class="kds-badge-station">
+          <div>
+            <h2 class="brand-title mb-0 fs-2 text-white">Melidan<span class="brand-dot">.</span></h2>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <span class="badge bg-warning text-dark fw-bold" id="kds-user-badge">👨‍🍳 Chef: Marco Antonio</span>
+              <span class="badge bg-secondary text-white small">Apartado Cocina KDS</span>
+            </div>
+          </div>
+          <div class="kds-badge-station text-end">
             <span>Estación: Wok</span>
             <span class="kds-time-text" id="kds-clock">13:45 PM</span>
           </div>
@@ -312,53 +331,16 @@
 
         <!-- Pestañas de Cocina -->
         <div class="kds-tabs-row">
-          <button type="button" class="kds-tab-btn" data-tab="nuevos" onclick="app.filterKds('nuevos')">Nuevos (2)</button>
-          <button type="button" class="kds-tab-btn active" data-tab="cocinando" onclick="app.filterKds('cocinando')">Cocinando (1)</button>
-          <button type="button" class="kds-tab-btn" data-tab="listos" onclick="app.filterKds('listos')">Listos (0)</button>
+          <button type="button" class="kds-tab-btn" data-tab="nuevos" onclick="app.filterKds('nuevos')">Nuevos (<span id="kds-count-nuevos">0</span>)</button>
+          <button type="button" class="kds-tab-btn active" data-tab="cocinando" onclick="app.filterKds('cocinando')">Cocinando (<span id="kds-count-cocinando">1</span>)</button>
+          <button type="button" class="kds-tab-btn" data-tab="listos" onclick="app.filterKds('listos')">Listos (<span id="kds-count-listos">1</span>)</button>
         </div>
 
-        <!-- Tarjetas de Pedidos KDS -->
+        <!-- Tarjetas de Pedidos KDS (Cargadas dinámicamente desde PostgreSQL Melidan_db) -->
         <div id="kds-orders-container">
-          <!-- Mesa 04 -->
-          <div class="kds-order-card" id="kds-card-1045">
-            <div class="kds-card-header">
-              <div>
-                <div class="kds-table-title">Mesa 04</div>
-                <small class="text-secondary">#1045 • Cliente: María S.</small>
-              </div>
-              <span class="kds-card-time">10:45</span>
-            </div>
-            <div class="kds-dish-line">
-              <span class="kds-dish-qty">1x</span>
-              <span class="text-white">Arroz con Pato</span>
-              <div class="kds-dish-note">* Bien cocido</div>
-            </div>
-            <div class="kds-dish-line mb-3">
-              <span class="kds-dish-qty">2x</span>
-              <span class="text-white">Causa Limeña</span>
-            </div>
-            <button type="button" class="btn-kds-ready" onclick="app.markKdsReady('1045')">
-              ¡Plato Listo!
-            </button>
-          </div>
-
-          <!-- Mesa 08 -->
-          <div class="kds-order-card" id="kds-card-1046">
-            <div class="kds-card-header">
-              <div>
-                <div class="kds-table-title">Mesa 08</div>
-                <small class="text-secondary">#1046 • Cliente: Jorge R.</small>
-              </div>
-              <span class="kds-card-time">10:50</span>
-            </div>
-            <div class="kds-dish-line mb-3">
-              <span class="kds-dish-qty">1x</span>
-              <span class="text-white">Lomo Saltado</span>
-              <div class="kds-dish-note">* SIN PECANAS (Alergia)</div>
-            </div>
-            <button type="button" class="btn-kds-prepare" onclick="app.markKdsCooking('1046')">
-              Preparar Pedido
-            </button>
+          <div class="text-center py-5 text-secondary">
+            <div class="spinner-border spinner-border-sm text-teal mb-2" role="status"></div>
+            <div>Cargando comandas desde PostgreSQL...</div>
           </div>
         </div>
       </div>
@@ -369,9 +351,17 @@
          ==================================================================== -->
     <section class="view-screen" id="screen-menu">
       <!-- Cabecera Carta -->
-      <div class="p-3 d-flex justify-content-between align-items-center">
-        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
-        <span class="table-pill-badge">Mesa #04</span>
+      <div class="p-3 d-flex justify-content-between align-items-center border-bottom bg-white">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge bg-success-subtle text-success border border-success-subtle" id="menu-user-badge">🛎️ Mozo: Carlos Paredes</span>
+            <span class="badge bg-light text-muted border small">Apartado Salón</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="table-pill-badge">Mesa #04</span>
+        </div>
       </div>
 
       <!-- Buscador -->
@@ -380,12 +370,13 @@
         <input type="text" id="menu-search-input" class="search-input-box" placeholder="Buscar plato o bebida..." oninput="app.searchMenu(this.value)">
       </div>
 
-      <!-- Filtros de Categorías -->
-      <div class="category-pills-row">
+      <!-- Filtros de Categorías (Coincidentes con Melidan_db) -->
+      <div class="category-pills-row" id="category-pills-container">
         <button type="button" class="category-pill active" onclick="app.filterCategory('Todos', this)">Todos</button>
-        <button type="button" class="category-pill" onclick="app.filterCategory('Entradas', this)">Entradas</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Especialidades al Horno', this)">Especialidades al Horno</button>
         <button type="button" class="category-pill" onclick="app.filterCategory('Platos de Fondo', this)">Platos de Fondo</button>
         <button type="button" class="category-pill" onclick="app.filterCategory('Bebidas', this)">Bebidas</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Postres', this)">Postres</button>
       </div>
 
       <div class="px-3 mb-2">
@@ -394,16 +385,16 @@
 
       <!-- Lista de Platos -->
       <div id="menu-dishes-container" class="flex-grow-1">
-        <!-- Renderizado dinámicamente desde window.db.dishes -->
+        <!-- Renderizado dinámicamente desde PostgreSQL Melidan_db -->
       </div>
 
       <!-- Barra Flotante de Carrito -->
-      <div class="cart-floating-bar" onclick="app.showScreen('tracker')">
+      <div class="cart-floating-bar" id="cart-floating-bar" onclick="app.checkoutCart()">
         <div class="d-flex align-items-center gap-2">
           <span class="cart-count-pill" id="cart-item-count">2 items</span>
-          <span class="fw-bold text-dark fs-6">Ver Carrito</span>
+          <span class="fw-bold text-dark fs-6">Enviar Pedido a Cocina</span>
         </div>
-        <span class="fw-bold text-dark fs-6" id="cart-total-amount">S/ 52.00</span>
+        <span class="fw-bold text-dark fs-6" id="cart-total-amount">S/ 62.00</span>
       </div>
     </section>
 
@@ -412,16 +403,23 @@
          ==================================================================== -->
     <section class="view-screen" id="screen-tracker">
       <!-- Cabecera -->
-      <div class="p-3 d-flex justify-content-between align-items-center">
-        <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
-        <span class="table-pill-badge">Mesa #04</span>
+      <div class="p-3 d-flex justify-content-between align-items-center border-bottom bg-white">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge bg-info-subtle text-info border border-info-subtle" id="tracker-user-badge">⏱️ Monitoreo de Mesas</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="table-pill-badge">Mesa #04</span>
+        </div>
       </div>
 
       <div class="px-2 flex-grow-1">
         <!-- Tarjeta de Pedido -->
         <div class="order-overview-card">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="fw-bold fs-5 text-dark">Pedido • #1045</span>
+            <span class="fw-bold fs-5 text-dark" id="tracker-order-num">Pedido • #1024</span>
             <span class="badge-status-cooking" id="tracker-status-badge">En cocina</span>
           </div>
           <div class="d-flex justify-content-between align-items-center text-secondary small">
@@ -452,7 +450,7 @@
             <div class="step-marker text-secondary">○</div>
             <div>
               <div class="step-title">¡Plato Listo para Servir!</div>
-              <div class="step-desc">El mozo Carlos P. lo llevara inmediatamente a tu mesa</div>
+              <div class="step-desc">El mozo lo llevara inmediatamente a tu mesa</div>
             </div>
           </div>
 
@@ -466,19 +464,18 @@
         </div>
 
         <!-- Platos en este pedido -->
-        <div class="order-overview-card mb-3">
+        <div class="order-overview-card mb-3" id="tracker-dishes-box">
           <div class="fw-bold fs-6 text-dark mb-2">Platos en este pedido:</div>
-          <div class="text-secondary small mb-1">• 1x Arroz con Pato (*Bien cocido)</div>
-          <div class="text-secondary small">• 2x Causa Limeña</div>
+          <div class="text-secondary small mb-1">• 1x Lechón a Fuego Lento (*Término medio, salsa aparte)</div>
         </div>
 
         <!-- Botones de Acción -->
         <div class="px-3 pb-4 text-center">
-          <button type="button" class="btn-outline-dark-melidan" onclick="app.showToast('Boleta Electrónica B001-000412 descargada en PDF')">
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.showElectronicReceipt()">
             Ver boleta Electronica
           </button>
 
-          <button type="button" class="btn-outline-dark-melidan" onclick="app.showToast('Mozo Carlos P. notificado a la Mesa 04')">
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.callWaiter()">
             Llamar al Mozo
           </button>
 
@@ -521,19 +518,65 @@
 
   </main>
 
-  <!-- Botón Flotante para Cambiar Rápido de Roles (Evaluación) -->
+  <!-- Botón Flotante para Cambiar Rápido de Roles (Evaluación de Permisos) -->
   <div class="dev-role-floater dropdown">
-    <button class="btn btn-dark btn-sm rounded-pill shadow-lg dropdown-toggle px-3 py-2 fw-bold" type="button" data-bs-toggle="dropdown">
-      ⚡ Probar Rol
+    <button class="btn btn-dark btn-sm rounded-pill shadow-lg dropdown-toggle px-3 py-2 fw-bold d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+      <i class="bi bi-shield-lock-fill text-warning"></i>
+      <span>Probar Roles</span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2">
-      <li><h6 class="dropdown-header small fw-bold">Credenciales 1-Clic</h6></li>
-      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('admin@melidan.com')">👑 Admin (Don Roberto)</a></li>
-      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('chef@melidan.com')">👨‍🍳 Chef (Marco Antonio)</a></li>
-      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('carlos.p@melidan.com')">🛎️ Mozo (Carlos P.)</a></li>
-      <li><a class="dropdown-item small py-2" href="#" onclick="app.quickLogin('maria.s@melidan.com')">💳 Cajera (María S.)</a></li>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="min-width: 290px;">
+      <li><h6 class="dropdown-header small fw-bold text-uppercase text-secondary">Control de Acceso por Rol (RBAC)</h6></li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('chef@melidan.com', 'password123')">
+          <div>
+            <div class="fw-bold">👨‍🍳 Cocinero (Marco Antonio)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado ÚNICO: Cocina KDS</div>
+          </div>
+          <span class="badge bg-warning text-dark ms-2">Solo Cocina</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('carlos.p@melidan.com', 'password123')">
+          <div>
+            <div class="fw-bold">🛎️ Mozo (Carlos Paredes)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Carta QR y Tracker</div>
+          </div>
+          <span class="badge bg-success-subtle text-success ms-2">Solo Salón</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('maria.s@melidan.com', 'password123')">
+          <div>
+            <div class="fw-bold">🛎️ Moza (María Salazar)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Carta QR y Tracker</div>
+          </div>
+          <span class="badge bg-success-subtle text-success ms-2">Solo Salón</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('caja@melidan.com', 'password123')">
+          <div>
+            <div class="fw-bold">💵 Cajera (Lucía Ramos)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Tracker y Carta QR</div>
+          </div>
+          <span class="badge bg-info-subtle text-info ms-2">Caja</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('admin@melidan.com', 'password123')">
+          <div>
+            <div class="fw-bold">👑 Admin (Don Roberto)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Acceso Total: Todos los apartados</div>
+          </div>
+          <span class="badge bg-primary-subtle text-primary ms-2">Total</span>
+        </a>
+      </li>
       <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item small text-danger py-1" href="#" onclick="window.db.reset(); location.reload();">↺ Restablecer Base de Datos</a></li>
+      <li>
+        <div class="px-2 py-1 small text-muted" style="font-size: 0.73rem;">
+          🔒 Conectado a PostgreSQL 18. Las pestañas no autorizadas quedan ocultas y bloqueadas.
+        </div>
+      </li>
     </ul>
   </div>
 

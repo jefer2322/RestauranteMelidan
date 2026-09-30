@@ -1,7 +1,7 @@
 <?php
 /**
  * api/dashboard.php - Métricas y Monitoreo del Panel de Administrador
- * Conectado a PostgreSQL 18 (melidan_db)
+ * Conectado a PostgreSQL 18 (Melidan_db)
  */
 
 require_once __DIR__ . '/config.php';
@@ -9,13 +9,13 @@ setupApiHeaders();
 
 $db = getDBConnection();
 
-// 1. Total Ventas de Hoy
+// 1. Total Ventas (pagos exitosos)
 $stmtSales = $db->query("
-    SELECT COALESCE(SUM(monto_total), 1450.00) AS total_ventas 
+    SELECT COALESCE(SUM(monto_total), 0.00) AS total_ventas 
     FROM ventas 
-    WHERE DATE(fecha_pago) = CURRENT_DATE OR estado_pago = 'exitoso'
+    WHERE estado_pago = 'exitoso'
 ");
-$ventasHoy = floatval($stmtSales->fetchColumn() ?: 1450.00);
+$ventasHoy = floatval($stmtSales->fetchColumn() ?: 0.00);
 
 // 2. Pedidos Activos (pendiente, en_cocina, listo)
 $stmtActiveOrders = $db->query("
@@ -23,7 +23,7 @@ $stmtActiveOrders = $db->query("
     FROM pedidos 
     WHERE estado IN ('pendiente', 'en_cocina', 'listo')
 ");
-$pedidosActivos = intval($stmtActiveOrders->fetchColumn() ?: 12);
+$pedidosActivos = intval($stmtActiveOrders->fetchColumn() ?: 0);
 
 // 3. Mesas Ocupadas
 $stmtTables = $db->query("
@@ -33,21 +33,25 @@ $stmtTables = $db->query("
     FROM mesas
 ");
 $tablesData = $stmtTables->fetch();
-$mesasOcupadas = intval($tablesData['ocupadas'] ?? 8);
-$totalMesas = intval($tablesData['total_mesas'] ?? 15);
+$mesasOcupadas = intval($tablesData['ocupadas'] ?? 0);
+$totalMesas = intval($tablesData['total_mesas'] ?? 0);
 
 // 4. Tiempo Promedio
 $tiempoPromedio = "14 min";
 
-// 5. Monitoreo de Salón (Comandas activas formateadas)
+// 5. Monitoreo de Salón (Comandas activas con cálculos normalizados)
 $stmtMonitor = $db->query("
     SELECT 
         p.id_pedido,
         p.numero_comanda,
         m.numero_mesa,
-        p.mozo_nombre,
+        COALESCE(u.nombre, 'Mozo de Turno') AS mozo_nombre,
         p.nombre_cliente,
-        p.total,
+        COALESCE(
+            (SELECT SUM(dp.cantidad * dp.precio_unitario) FROM detalle_pedidos dp WHERE dp.id_pedido = p.id_pedido),
+            v.monto_total,
+            0.00
+        ) AS total,
         p.estado,
         CASE 
             WHEN p.estado = 'listo' THEN 'Listo para entregar'
@@ -59,15 +63,22 @@ $stmtMonitor = $db->query("
         TO_CHAR(p.fecha_hora, 'HH12:MI AM') AS hora
     FROM pedidos p
     LEFT JOIN mesas m ON p.id_mesa = m.id_mesa
+    LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+    LEFT JOIN ventas v ON p.id_pedido = v.id_pedido
     WHERE p.estado IN ('en_cocina', 'listo', 'pendiente')
     ORDER BY p.id_pedido ASC
     LIMIT 10
 ");
 $salonOrders = $stmtMonitor->fetchAll();
 
+// 6. Información del restaurante
+$infoStmt = $db->query("SELECT nombre, slogan, ruc, direccion, telefono FROM restaurante_info WHERE id_restaurante = 1 LIMIT 1");
+$restInfo = $infoStmt->fetch() ?: [];
+
 jsonResponse([
     'success' => true,
-    'database' => 'PostgreSQL 18 (melidan_db)',
+    'database' => 'PostgreSQL 18 (Melidan_db)',
+    'restaurante' => $restInfo,
     'metrics' => [
         'ventas_hoy' => $ventasHoy,
         'ventas_hoy_formato' => 'S/ ' . number_format($ventasHoy, 2),
