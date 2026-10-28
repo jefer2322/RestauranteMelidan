@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FF5722">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Melidan - Iniciar Sesión | Sistema Gastronómico</title>
+  <meta name="description" content="Sistema integral gastronómico Melidan: Administración, KDS de Cocina, Gestión de Personal, Carta QR y Monitoreo.">
+
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <script src="/js/theme.js"></script>
+
+  <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Estilos Modulares (dark-mode.css al final para prioridad total) -->
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
+</head>
+<body>
+
+  <!-- Contenedor Principal Web Responsive + Demo Móvil -->
+  <main class="app-container app-container-auth">
+
+    <!-- Barra de Utilidades Superior (Tema Oscuro y Demo Móvil) -->
+    <div class="portal-topbar">
+      <small class="text-muted fw-bold" style="font-size: 0.72rem; letter-spacing: 0.06em;">PORTAL MELIDAN</small>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
+          <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
+        </button>
+        <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
+          <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         1. PANTALLAS DE AUTENTICACIÓN (LOGIN, REGISTRO & RECUPERACIÓN)
+         ==================================================================== -->
+
+    <!-- PANTALLA: LOGIN -->
+    <section class="view-screen active-screen" id="screen-login">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <h1 class="brand-title">Melidan<span class="brand-dot">.</span></h1>
+          <p class="brand-subtitle">Ingresa para gestionar tus pedidos</p>
+          <div class="mt-2 text-center">
+            <span class="db-status-badge db-connected" id="login-db-badge">
+              <span class="badge-dot-green"></span> PostgreSQL 18 Conectado (melidan_db)
+            </span>
+          </div>
+        </div>
+
+        <div id="login-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-login" novalidate>
+          <div class="mb-3">
+            <label for="login-email" class="form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="login-email" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com" autocomplete="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="login-password" class="form-label-melidan">Contraseña</label>
+            <input type="password" id="login-password" class="form-control form-control-melidan" placeholder="••••••••" value="password123" autocomplete="current-password" required>
+          </div>
+
+          <button type="submit" class="btn-melidan-orange" id="btn-login-submit">
+            Iniciar Sesión
+          </button>
+
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('forgot-step1'); return false;">
+            ¿Olvidaste tu contraseña?
+          </a>
+
+          <div class="text-center mt-3 pt-2 border-top">
+            <a href="#" class="link-melidan-teal fw-bold d-block" onclick="app.showScreen('register'); return false;">
+              ✨ ¿No tienes cuenta? Regístrate aquí
+            </a>
+          </div>
+
+          <!-- Módulos Separados (Acceso Directo Operativo) -->
+          <div class="mt-3 pt-3 border-top text-center">
+            <small class="text-secondary fw-bold d-block mb-2" style="font-size: 0.74rem; letter-spacing: 0.05em;">MÓDULOS DEL SISTEMA:</small>
+            <div class="row g-2">
+              <div class="col-6">
+                <a href="/admin.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
+                  <i class="bi bi-speedometer2 text-danger me-1"></i> Admin
+                </a>
+              </div>
+              <div class="col-6">
+                <a href="/mozo.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
+                  <i class="bi bi-grid-3x3-gap-fill text-success me-1"></i> Mozo / Mesas
+                </a>
+              </div>
+              <div class="col-6">
+                <a href="/cocina.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
+                  <i class="bi bi-fire text-warning me-1"></i> Cocina KDS
+                </a>
+              </div>
+              <div class="col-6">
+                <a href="/cajero.html" class="btn btn-outline-dark btn-sm w-100 fw-bold py-2">
+                  <i class="bi bi-cash-coin text-primary me-1"></i> Cajero
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANTALLA: REGISTRO DE USUARIOS Y CLIENTES -->
+    <section class="view-screen" id="screen-register">
+      <div class="auth-content auth-content-wide">
+        <div class="text-center mb-3">
+          <h1 class="brand-title">Melidan<span class="brand-dot">.</span></h1>
+          <p class="brand-subtitle mb-1">Crea tu cuenta de comensal o personal</p>
+          <span class="badge bg-light text-secondary border small">Validación de Peruanos y Extranjeros</span>
+        </div>
+
+        <div id="register-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-register" novalidate>
+          <div class="mb-3">
+            <label for="reg-name" class="form-label-melidan">Nombre Completo *</label>
+            <input type="text" id="reg-name" class="form-control form-control-melidan" placeholder="Ej. Juan Pérez o John Smith" required minlength="3">
+            <div class="invalid-feedback small">El nombre debe tener al menos 3 caracteres.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-melidan d-block">Procedencia / Nacionalidad *</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="reg-origin" id="reg-origin-pe" value="nacional" checked autocomplete="off" onchange="app.handleOriginChange('nacional')">
+              <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="reg-origin-pe">🇵🇪 Nacional (Perú)</label>
+
+              <input type="radio" class="btn-check" name="reg-origin" id="reg-origin-foreign" value="extranjero" autocomplete="off" onchange="app.handleOriginChange('extranjero')">
+              <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="reg-origin-foreign">🌎 Extranjero</label>
+            </div>
+          </div>
+
+          <div class="mb-3 d-none" id="reg-country-container">
+            <label for="reg-nationality" class="form-label-melidan">País de Origen / Nacionalidad *</label>
+            <input type="text" id="reg-nationality" class="form-control form-control-melidan" placeholder="Ej. Argentina, Colombia, España, Estados Unidos">
+            <div class="invalid-feedback small">Indica tu país de origen.</div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-5">
+              <label for="reg-doc-type" class="form-label-melidan">Tipo Doc. *</label>
+              <select id="reg-doc-type" class="form-select form-control-melidan" onchange="app.handleDocTypeChange(this.value)">
+                <option value="DNI">DNI</option>
+                <option value="PASAPORTE" class="d-none option-foreign">Pasaporte</option>
+                <option value="CARNET_EXTRANJERIA" class="d-none option-foreign">C. Extranjería</option>
+              </select>
+            </div>
+            <div class="col-7">
+              <label for="reg-doc-number" class="form-label-melidan" id="reg-doc-label">N° DNI (8 dígitos) *</label>
+              <input type="text" id="reg-doc-number" class="form-control form-control-melidan" placeholder="Ej. 72849102" maxlength="8" required>
+              <div class="invalid-feedback small" id="reg-doc-feedback">El DNI debe tener exactamente 8 dígitos numéricos.</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reg-phone" class="form-label-melidan" id="reg-phone-label">Teléfono Móvil (Perú: 9 dígitos) *</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light fw-bold border-end-0 small text-secondary" id="reg-phone-prefix">+51</span>
+              <input type="tel" id="reg-phone" class="form-control form-control-melidan border-start-0" placeholder="987654321" required>
+            </div>
+            <div class="invalid-feedback small" id="reg-phone-feedback">Ingresa 9 dígitos comenzando con 9 (ej. 987654321).</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reg-email" class="form-label-melidan">Correo Electrónico *</label>
+            <input type="email" id="reg-email" class="form-control form-control-melidan" placeholder="tu.correo@ejemplo.com" required>
+            <div class="invalid-feedback small">Ingresa un correo electrónico válido (ej. usuario@gmail.com).</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reg-password" class="form-label-melidan">Contraseña (Mínimo 6 caracteres) *</label>
+            <input type="password" id="reg-password" class="form-control form-control-melidan" placeholder="••••••••" required minlength="6">
+            <div class="invalid-feedback small">La contraseña debe tener al menos 6 caracteres.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reg-password-confirm" class="form-label-melidan">Confirmar Contraseña *</label>
+            <input type="password" id="reg-password-confirm" class="form-control form-control-melidan" placeholder="••••••••" required>
+            <div class="invalid-feedback small" id="reg-confirm-feedback">Las contraseñas no coinciden.</div>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="reg-terms" required>
+            <label class="form-check-label small text-secondary" for="reg-terms">
+              Acepto los términos del servicio y política de privacidad de Melidan.
+            </label>
+          </div>
+
+          <button type="submit" class="btn-melidan-orange w-100" id="btn-register-submit" disabled>
+            Crear Cuenta
+          </button>
+
+          <div class="text-center mt-3">
+            <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
+              ¿Ya tienes una cuenta? Iniciar Sesión
+            </a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 1 -->
+    <section class="view-screen" id="screen-forgot-step1">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa tu correo para recibir el código de verificación</p>
+        </div>
+
+        <div id="forgot1-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step1">
+          <div class="mb-3">
+            <label for="forgot-email" class="form-label-melidan">Correo Electrónico</label>
+            <input type="email" id="forgot-email" class="form-control form-control-melidan" placeholder="ejemplo@correo.com" value="admin@melidan.com" required>
+          </div>
+
+          <button type="submit" class="btn-melidan-orange">
+            Enviar código de 6 dígitos
+          </button>
+
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
+            ¿Volver al inicio de sesión?
+          </a>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 2 -->
+    <section class="view-screen" id="screen-forgot-step2">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa el código de 6 dígitos</p>
+        </div>
+
+        <div id="forgot2-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step2">
+          <div class="mb-3">
+            <label for="otp-code" class="form-label-melidan">Código de verificación</label>
+            <input type="text" id="otp-code" class="form-control form-control-melidan text-center fw-bold fs-5" placeholder="XXX-XXX" maxlength="7" required>
+          </div>
+
+          <button type="submit" class="btn-melidan-orange">
+            Verificar código de 6 dígitos
+          </button>
+
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
+            ¿Volver al inicio de sesión?
+          </a>
+        </form>
+      </div>
+    </section>
+
+    <!-- PANTALLA: RECUPERAR CONTRASEÑA - PASO 3 -->
+    <section class="view-screen" id="screen-forgot-step3">
+      <div class="auth-content">
+        <div class="text-center mb-4">
+          <div class="brand-title">Melidan<span class="brand-dot">.</span></div>
+          <p class="brand-subtitle">Ingresa tu nueva contraseña</p>
+        </div>
+
+        <div id="forgot3-alert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+        <form id="form-forgot-step3">
+          <div class="mb-3">
+            <label for="new-password" class="form-label-melidan">Nueva Contraseña</label>
+            <input type="password" id="new-password" class="form-control form-control-melidan" placeholder="••••••••" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="confirm-password" class="form-label-melidan">Repite tu contraseña</label>
+            <input type="password" id="confirm-password" class="form-control form-control-melidan" placeholder="••••••••" required>
+          </div>
+
+          <button type="submit" class="btn-melidan-orange">
+            Cambiar contraseña
+          </button>
+
+          <a href="#" class="link-melidan-orange" onclick="app.showScreen('login'); return false;">
+            ¿Volver al inicio de sesión?
+          </a>
+        </form>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         2. PANEL DE ADMINISTRADOR / DUEÑO (SPA)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-admin">
+      <div class="admin-header">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <span class="db-status-badge db-connected mt-1">
+            <span class="badge-dot-green"></span> PostgreSQL 18 (melidan_db)
+          </span>
+        </div>
+        <div class="user-profile text-end">
+          <div class="d-flex align-items-center gap-2">
+            <div class="text-end">
+              <div class="user-name fw-bold" id="admin-user-name">Don Roberto</div>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle" id="admin-role-badge">👑 Administrador</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="admin-user-avatar">
+          </div>
+        </div>
+      </div>
+
+      <div class="px-3 py-2 flex-grow-1">
+        <div class="mb-4">
+          <h3 class="section-heading">Resumen de Hoy</h3>
+          <div class="row g-2">
+            <div class="col-6 col-md-3">
+              <div class="metric-card">
+                <span class="metric-label">Ventas de Hoy</span>
+                <span class="metric-value val-teal" id="metric-sales">S/ 1,450.00</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="metric-card">
+                <span class="metric-label">Pedidos Activos</span>
+                <span class="metric-value val-orange" id="metric-active-orders">12</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="metric-card">
+                <span class="metric-label">Mesas Ocupadas</span>
+                <span class="metric-value val-teal" id="metric-tables">8 / 15</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="metric-card">
+                <span class="metric-label">Tiempo Promedio</span>
+                <span class="metric-value val-red" id="metric-avg-time">14 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="section-heading mb-0">Monitoreo (Salón)</h3>
+            <a href="#" class="section-link" onclick="app.showScreen('kds'); return false;">Ver todos</a>
+          </div>
+
+          <div id="admin-orders-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         3. GESTIÓN DE PERSONAL (SPA)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-staff">
+      <div class="admin-header border-bottom">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1" id="staff-role-badge">👑 Panel de Administración</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="text-end">
+            <span class="user-name fw-bold" id="staff-header-user-name">Don Roberto</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="user-avatar" id="staff-user-avatar">
+        </div>
+      </div>
+
+      <div class="px-3 py-3 flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <h3 class="fw-bold fs-4 text-dark mb-0">Gestión de Personal</h3>
+            <p class="text-secondary small mb-0">Control de acceso, plantilla y comensales (PostgreSQL 18)</p>
+          </div>
+          <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="app.refreshStaffList()">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-3">
+            <div class="metric-card py-2 px-1 text-center">
+              <span class="metric-label" style="font-size: 0.68rem;">Total</span>
+              <span class="metric-value fs-5 val-teal" id="staff-stat-total">0</span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="metric-card py-2 px-1 text-center">
+              <span class="metric-label" style="font-size: 0.68rem;">Activos</span>
+              <span class="metric-value fs-5 val-orange" id="staff-stat-active">0</span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="metric-card py-2 px-1 text-center">
+              <span class="metric-label" style="font-size: 0.68rem;">Extranjeros</span>
+              <span class="metric-value fs-5 text-primary" id="staff-stat-foreign">0</span>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="metric-card py-2 px-1 text-center">
+              <span class="metric-label" style="font-size: 0.68rem;">Papelera</span>
+              <span class="metric-value fs-5 val-red" id="staff-stat-deleted">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="position-relative mb-2">
+          <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+          <input type="text" id="staff-search-input" class="search-input-box" placeholder="Buscar por nombre, documento, correo o país..." oninput="app.searchStaff(this.value)">
+        </div>
+
+        <div class="category-pills-row mb-2" id="staff-role-filters">
+          <button type="button" class="category-pill active" onclick="app.filterStaffRole('Todos', this)">Todos</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('mozo', this)">Mozos</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('cocina', this)">Cocina</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('cajero', this)">Cajeros</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('recepcionista', this)">Recepción</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('administrador', this)">Admin</button>
+          <button type="button" class="category-pill" onclick="app.filterStaffRole('cliente', this)">Clientes</button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="staff-toggle-deleted" onchange="app.toggleIncludeDeleted(this.checked)">
+            <label class="form-check-label small fw-semibold text-secondary" for="staff-toggle-deleted">
+              Mostrar Papelera (Registros Dados de Baja Lógica)
+            </label>
+          </div>
+          <span class="badge bg-light text-secondary border small" id="staff-count-indicator">Cargando...</span>
+        </div>
+
+        <div id="staff-cards-container"></div>
+
+        <div class="mt-4 pt-3 border-top">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="fw-bold fs-6 text-dark mb-0">Registrar Nuevo Usuario / Empleado</h4>
+            <span class="badge bg-teal text-white small">PostgreSQL 18</span>
+          </div>
+
+          <form id="form-new-staff" class="border rounded-4 p-3 bg-light-subtle shadow-sm" novalidate>
+            <div class="mb-3">
+              <label for="staff-name-input" class="form-label-melidan">Nombre Completo *</label>
+              <input type="text" id="staff-name-input" class="form-control form-control-melidan bg-white" placeholder="Ej. Carlos Mendoza o John Smith" required minlength="3">
+              <div class="invalid-feedback small">El nombre debe tener mínimo 3 caracteres.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label-melidan d-block">Procedencia / Nacionalidad *</label>
+              <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="staff-origin" id="staff-origin-pe" value="nacional" checked autocomplete="off" onchange="app.handleStaffOriginChange('nacional')">
+                <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="staff-origin-pe">🇵🇪 Nacional (Perú)</label>
+
+                <input type="radio" class="btn-check" name="staff-origin" id="staff-origin-foreign" value="extranjero" autocomplete="off" onchange="app.handleStaffOriginChange('extranjero')">
+                <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="staff-origin-foreign">🌎 Extranjero</label>
+              </div>
+            </div>
+
+            <div class="mb-3 d-none" id="staff-country-container">
+              <label for="staff-nationality-input" class="form-label-melidan">País de Origen *</label>
+              <input type="text" id="staff-nationality-input" class="form-control form-control-melidan bg-white" placeholder="Ej. Colombia, Argentina, España, etc.">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-5">
+                <label for="staff-doc-type-select" class="form-label-melidan">Tipo Doc. *</label>
+                <select id="staff-doc-type-select" class="form-select form-control-melidan bg-white" onchange="app.handleStaffDocTypeChange(this.value)">
+                  <option value="DNI">DNI</option>
+                  <option value="PASAPORTE" class="d-none staff-opt-foreign">Pasaporte</option>
+                  <option value="CARNET_EXTRANJERIA" class="d-none staff-opt-foreign">C. Extranjería</option>
+                </select>
+              </div>
+              <div class="col-7">
+                <label for="staff-doc-number-input" class="form-label-melidan" id="staff-doc-number-label">N° DNI (8 dígitos) *</label>
+                <input type="text" id="staff-doc-number-input" class="form-control form-control-melidan bg-white" placeholder="Ej. 72849102" maxlength="8" required>
+                <div class="invalid-feedback small" id="staff-doc-feedback">El DNI debe tener 8 dígitos numéricos.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-phone-input" class="form-label-melidan" id="staff-phone-label">Teléfono Móvil (9 dígitos) *</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white fw-bold border-end-0 small text-secondary" id="staff-phone-prefix">+51</span>
+                <input type="tel" id="staff-phone-input" class="form-control form-control-melidan border-start-0 bg-white" placeholder="987654321" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-email-input" class="form-label-melidan">Correo Electrónico *</label>
+              <input type="email" id="staff-email-input" class="form-control form-control-melidan bg-white" placeholder="ejemplo@melidan.com" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-role-select" class="form-label-melidan">Rol en el Sistema *</label>
+              <select id="staff-role-select" class="form-select form-control-melidan bg-white">
+                <option value="mozo">🛎️ Mozo / Atención de salón</option>
+                <option value="cocina">👨‍🍳 Cocinero / Cocina KDS</option>
+                <option value="cajero">💵 Cajero / Facturación</option>
+                <option value="recepcionista">🛎️ Recepcionista / Aforo</option>
+                <option value="administrador">👑 Administrador</option>
+                <option value="cliente">🍽️ Cliente / Comensal</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-shift-select" class="form-label-melidan">Turno de Trabajo</label>
+              <select id="staff-shift-select" class="form-select form-control-melidan bg-white">
+                <option value="Turno Mañana (8:00 AM - 4:00 PM)">Turno Mañana (8:00 AM - 4:00 PM)</option>
+                <option value="Turno Tarde (4:00 PM - 12:00 AM)">Turno Tarde (4:00 PM - 12:00 AM)</option>
+                <option value="Turno Rotativo">Turno Rotativo</option>
+                <option value="Turno Completo / Gerencia">Turno Completo / Gerencia</option>
+                <option value="Cliente">Cliente / Comensal</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="staff-pass-input" class="form-label-melidan">Contraseña (Mínimo 6 caracteres)</label>
+              <input type="password" id="staff-pass-input" class="form-control form-control-melidan bg-white" placeholder="•••••••• (Por defecto: password123)" value="password123">
+            </div>
+
+            <button type="submit" class="btn-melidan-teal w-100" id="btn-staff-submit">
+              Guardar Usuario en PostgreSQL
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         4. COCINA KDS (SPA)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-kds">
+      <div class="kds-view-container flex-grow-1">
+        <div class="kds-header">
+          <div>
+            <h2 class="brand-title mb-0 fs-2 text-white">Melidan<span class="brand-dot">.</span></h2>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <span class="badge bg-warning text-dark fw-bold" id="kds-user-badge">👨‍🍳 Chef: Marco Antonio</span>
+              <span class="badge bg-secondary text-white small">Apartado Cocina KDS</span>
+            </div>
+          </div>
+          <div class="kds-badge-station text-end">
+            <span>Estación: Wok</span>
+            <span class="kds-time-text" id="kds-clock">13:45 PM</span>
+          </div>
+        </div>
+
+        <div class="kds-tabs-row">
+          <button type="button" class="kds-tab-btn" data-tab="nuevos" onclick="app.filterKds('nuevos')">Nuevos (<span id="kds-count-nuevos">0</span>)</button>
+          <button type="button" class="kds-tab-btn active" data-tab="cocinando" onclick="app.filterKds('cocinando')">Cocinando (<span id="kds-count-cocinando">1</span>)</button>
+          <button type="button" class="kds-tab-btn" data-tab="listos" onclick="app.filterKds('listos')">Listos (<span id="kds-count-listos">1</span>)</button>
+        </div>
+
+        <div id="kds-orders-container">
+          <div class="text-center py-5 text-secondary">
+            <div class="spinner-border spinner-border-sm text-teal mb-2" role="status"></div>
+            <div>Cargando comandas desde PostgreSQL...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         5. CARTA DIGITAL QR (SPA)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-menu">
+      <div class="p-3 d-flex justify-content-between align-items-center border-bottom bg-white">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge bg-success-subtle text-success border border-success-subtle" id="menu-user-badge">🛎️ Mozo: Carlos Paredes</span>
+            <span class="badge bg-light text-muted border small">Apartado Salón</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="table-pill-badge">Mesa #04</span>
+        </div>
+      </div>
+
+      <div class="px-3 pt-3 pb-2 position-relative">
+        <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+        <input type="text" id="menu-search-input" class="search-input-box" placeholder="Buscar plato o bebida..." oninput="app.searchMenu(this.value)">
+      </div>
+
+      <div class="category-pills-row" id="category-pills-container">
+        <button type="button" class="category-pill active" onclick="app.filterCategory('Todos', this)">Todos</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Especialidades al Horno', this)">Especialidades al Horno</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Platos de Fondo', this)">Platos de Fondo</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Bebidas', this)">Bebidas</button>
+        <button type="button" class="category-pill" onclick="app.filterCategory('Postres', this)">Postres</button>
+      </div>
+
+      <div class="px-3 mb-2">
+        <h3 class="fw-bold fs-5 text-dark mb-0">Populares hoy</h3>
+      </div>
+
+      <div id="menu-dishes-container" class="flex-grow-1"></div>
+
+      <div class="cart-floating-bar" id="cart-floating-bar" onclick="app.checkoutCart()">
+        <div class="d-flex align-items-center gap-2">
+          <span class="cart-count-pill" id="cart-item-count">2 items</span>
+          <span class="fw-bold text-dark fs-6">Enviar Pedido a Cocina</span>
+        </div>
+        <span class="fw-bold text-dark fs-6" id="cart-total-amount">S/ 62.00</span>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         6. SEGUIMIENTO / TRACKER DE PEDIDO (SPA)
+         ==================================================================== -->
+    <section class="view-screen" id="screen-tracker">
+      <div class="p-3 d-flex justify-content-between align-items-center border-bottom bg-white">
+        <div>
+          <h2 class="brand-title mb-0 fs-2">Melidan<span class="brand-dot">.</span></h2>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge bg-info-subtle text-info border border-info-subtle" id="tracker-user-badge">⏱️ Monitoreo de Mesas</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="table-pill-badge">Mesa #04</span>
+        </div>
+      </div>
+
+      <div class="px-2 flex-grow-1">
+        <div class="order-overview-card">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold fs-5 text-dark" id="tracker-order-num">Pedido • #1024</span>
+            <span class="badge-status-cooking" id="tracker-status-badge">En cocina</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center text-secondary small">
+            <span>Tiempo estimado:</span>
+            <span class="fw-bold text-dark fs-6">12 - 15 min</span>
+          </div>
+        </div>
+
+        <div class="stepper-card">
+          <div class="stepper-step">
+            <div class="step-marker text-success">✓</div>
+            <div>
+              <div class="step-title">Pedido confirmado y registrado</div>
+              <div class="step-desc">Comanda sincronizada en tiempo real con PostgreSQL</div>
+            </div>
+          </div>
+
+          <div class="stepper-step">
+            <div class="step-marker text-warning">●</div>
+            <div>
+              <div class="step-title">En Preparación (Cocina)</div>
+              <div class="step-desc">Estación Wok • El chef está preparando tus platos con las notas solicitadas</div>
+            </div>
+          </div>
+
+          <div class="stepper-step opacity-75" id="step-ready">
+            <div class="step-marker text-secondary">○</div>
+            <div>
+              <div class="step-title">¡Plato Listo para Servir!</div>
+              <div class="step-desc">El mozo lo llevará inmediatamente a tu mesa</div>
+            </div>
+          </div>
+
+          <div class="stepper-step opacity-50" id="step-delivered">
+            <div class="step-marker text-secondary">○</div>
+            <div>
+              <div class="step-title">Entregado en Mesa</div>
+              <div class="step-desc">¡Buen provecho!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-overview-card mb-3" id="tracker-dishes-box">
+          <div class="fw-bold fs-6 text-dark mb-2">Platos en este pedido:</div>
+          <div class="text-secondary small mb-1">• 1x Lechón a Fuego Lento (*Término medio, salsa aparte)</div>
+        </div>
+
+        <div class="px-3 pb-4 text-center">
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.showElectronicReceipt()">
+            Ver Boleta Electrónica
+          </button>
+
+          <button type="button" class="btn-outline-dark-melidan" onclick="app.callWaiter()">
+            Llamar al Mozo
+          </button>
+
+          <a href="#" class="link-melidan-orange d-block mt-2" onclick="app.showScreen('menu'); return false;">
+            + Pedir algo más
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         BARRA DE NAVEGACIÓN INFERIOR (TAB BAR SPA)
+         ==================================================================== -->
+    <nav class="app-bottom-bar" id="app-bottom-bar" style="display: none;">
+      <button type="button" class="bottom-bar-btn active" data-screen="admin" onclick="app.showScreen('admin')">
+        <i class="bi bi-bar-chart-fill"></i>
+        <span>Admin</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="staff" onclick="app.showScreen('staff')">
+        <i class="bi bi-people-fill"></i>
+        <span>Personal</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="kds" onclick="app.showScreen('kds')">
+        <i class="bi bi-fire"></i>
+        <span>Cocina</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="menu" onclick="app.showScreen('menu')">
+        <i class="bi bi-qr-code"></i>
+        <span>Carta QR</span>
+      </button>
+      <button type="button" class="bottom-bar-btn" data-screen="tracker" onclick="app.showScreen('tracker')">
+        <i class="bi bi-clock-history"></i>
+        <span>Tracker</span>
+      </button>
+      <button type="button" class="bottom-bar-btn text-danger" onclick="app.logout()" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Salir</span>
+      </button>
+    </nav>
+
+  </main>
+
+  <!-- Botón Flotante para Cambiar Rápido de Roles (RBAC) -->
+  <div class="dev-role-floater dropdown">
+    <button class="btn btn-dark btn-sm rounded-pill shadow-lg dropdown-toggle px-3 py-2 fw-bold d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+      <i class="bi bi-shield-lock-fill text-warning"></i>
+      <span>Probar Roles</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="min-width: 290px;">
+      <li><h6 class="dropdown-header small fw-bold text-uppercase text-secondary">Control de Acceso por Rol (RBAC)</h6></li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('chef@melidan.com', 'password123'); return false;">
+          <div>
+            <div class="fw-bold">👨‍🍳 Cocinero (Marco Antonio)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado ÚNICO: Cocina KDS</div>
+          </div>
+          <span class="badge bg-warning text-dark ms-2">Solo Cocina</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('carlos.p@melidan.com', 'password123'); return false;">
+          <div>
+            <div class="fw-bold">🛎️ Mozo (Carlos Paredes)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Carta QR y Tracker</div>
+          </div>
+          <span class="badge bg-success-subtle text-success ms-2">Salón</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('maria.s@melidan.com', 'password123'); return false;">
+          <div>
+            <div class="fw-bold">💵 Cajera (María Salazar)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Facturación y Tracker</div>
+          </div>
+          <span class="badge bg-info-subtle text-info ms-2">Caja</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('recepcion@melidan.com', 'password123'); return false;">
+          <div>
+            <div class="fw-bold">🛎️ Recepción (Aforo)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Apartado: Monitoreo y Carta</div>
+          </div>
+          <span class="badge bg-info-subtle text-info ms-2">Recepción</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="#" onclick="app.quickLogin('admin@melidan.com', 'password123'); return false;">
+          <div>
+            <div class="fw-bold">👑 Admin (Don Roberto)</div>
+            <div class="small text-muted" style="font-size: 0.74rem;">Acceso Total: Todos los apartados</div>
+          </div>
+          <span class="badge bg-primary-subtle text-primary ms-2">Total</span>
+        </a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <div class="px-2 py-1 small text-muted" style="font-size: 0.73rem;">
+          🔒 Conectado a PostgreSQL 18 (melidan_db).
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ====================================================================
+       MODALES DE INTERFAZ Y FEEDBACK
+       ==================================================================== -->
+
+  <!-- 1. Modal de Confirmación Destructiva: Borrado Lógico -->
+  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+        <div class="modal-header bg-danger text-white border-0 py-3">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="confirmDeleteModalLabel">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Confirmar Baja (Borrado Lógico)</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="text-dark fs-6 mb-2">
+            ¿Está seguro de que desea dar de baja al usuario <strong id="delete-user-name">...</strong>?
+          </p>
+          <div class="alert alert-warning border-warning-subtle small mb-0 d-flex gap-2 align-items-start">
+            <i class="bi bi-shield-check fs-5 text-warning-emphasis"></i>
+            <div>
+              <strong>Integridad de Base de Datos Garantizada:</strong><br>
+              El registro <strong>NO se eliminará físicamente</strong> de PostgreSQL. Se marcará con borrado lógico (<code>is_deleted = TRUE</code>, estado: <code>Inactivo</code>).
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 bg-light py-2 px-3 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="btn-confirm-soft-delete" onclick="app.executeSoftDelete()">
+            <i class="bi bi-trash3-fill"></i> Confirmar Baja
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal de Edición de Usuario (CRUD Update) -->
+  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+        <div class="modal-header bg-dark text-white border-0 py-3">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="editUserModalLabel">
+            <i class="bi bi-pencil-square text-warning"></i>
+            <span>Editar Datos de Usuario</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="form-edit-user" novalidate onsubmit="app.submitUserEdit(event)">
+          <div class="modal-body p-4">
+            <input type="hidden" id="edit-user-id">
+
+            <div class="mb-3">
+              <label for="edit-user-name" class="form-label-melidan">Nombre Completo *</label>
+              <input type="text" id="edit-user-name" class="form-control form-control-melidan" required minlength="3">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label-melidan d-block">Procedencia / Nacionalidad *</label>
+              <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="edit-user-origin" id="edit-origin-pe" value="nacional" autocomplete="off" onchange="app.handleEditOriginChange('nacional')">
+                <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="edit-origin-pe">🇵🇪 Nacional (Perú)</label>
+
+                <input type="radio" class="btn-check" name="edit-user-origin" id="edit-origin-foreign" value="extranjero" autocomplete="off" onchange="app.handleEditOriginChange('extranjero')">
+                <label class="btn btn-outline-dark fw-bold btn-sm py-2" for="edit-origin-foreign">🌎 Extranjero</label>
+              </div>
+            </div>
+
+            <div class="mb-3 d-none" id="edit-country-container">
+              <label for="edit-user-nationality" class="form-label-melidan">País / Nacionalidad *</label>
+              <input type="text" id="edit-user-nationality" class="form-control form-control-melidan" placeholder="Ej. Colombia, España, etc.">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-5">
+                <label for="edit-doc-type" class="form-label-melidan">Tipo Doc. *</label>
+                <select id="edit-doc-type" class="form-select form-control-melidan" onchange="app.handleEditDocTypeChange(this.value)">
+                  <option value="DNI">DNI</option>
+                  <option value="PASAPORTE">Pasaporte</option>
+                  <option value="CARNET_EXTRANJERIA">C. Extranjería</option>
+                </select>
+              </div>
+              <div class="col-7">
+                <label for="edit-doc-number" class="form-label-melidan" id="edit-doc-label">N° Documento *</label>
+                <input type="text" id="edit-doc-number" class="form-control form-control-melidan" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-user-phone" class="form-label-melidan">Teléfono *</label>
+              <input type="tel" id="edit-user-phone" class="form-control form-control-melidan" placeholder="+51 987654321">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="edit-user-role" class="form-label-melidan">Rol en el Sistema *</label>
+                <select id="edit-user-role" class="form-select form-control-melidan">
+                  <option value="mozo">Mozo / Salón</option>
+                  <option value="cocina">Cocinero / Chef</option>
+                  <option value="cajero">Cajero / Facturación</option>
+                  <option value="recepcionista">Recepcionista</option>
+                  <option value="administrador">Administrador</option>
+                  <option value="cliente">Cliente / Comensal</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="edit-user-status" class="form-label-melidan">Estado *</label>
+                <select id="edit-user-status" class="form-select form-control-melidan">
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-user-shift" class="form-label-melidan">Turno Asignado</label>
+              <select id="edit-user-shift" class="form-select form-control-melidan">
+                <option value="Turno Mañana (8:00 AM - 4:00 PM)">Turno Mañana (8:00 AM - 4:00 PM)</option>
+                <option value="Turno Tarde (4:00 PM - 12:00 AM)">Turno Tarde (4:00 PM - 12:00 AM)</option>
+                <option value="Turno Rotativo">Turno Rotativo</option>
+                <option value="Turno Completo / Gerencia">Turno Completo / Gerencia</option>
+                <option value="Cliente">Cliente / Comensal</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 bg-light py-2 px-3 d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-melidan-teal rounded-pill px-4 fw-bold" id="btn-save-edit-user">
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal de Error HTTP -->
+  <div class="modal fade" id="httpErrorModal" tabindex="-1" aria-labelledby="httpErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+        <div class="modal-header bg-danger text-white border-0 py-3">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="httpErrorModalLabel">
+            <i class="bi bi-shield-x"></i>
+            <span id="http-error-title">Error en la Solicitud</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4 text-center">
+          <div class="badge bg-danger-subtle text-danger fs-6 px-3 py-2 border border-danger-subtle rounded-pill mb-3" id="http-error-code-badge">
+            HTTP 500
+          </div>
+          <h6 class="fw-bold text-dark mb-2" id="http-error-summary">Se produjo un error al procesar la operación</h6>
+          <p class="text-secondary small mb-0" id="http-error-detail">
+            Detalles del error reportado por el servidor.
+          </p>
+          <div id="http-error-validation-list" class="mt-3 text-start d-none"></div>
+        </div>
+        <div class="modal-footer border-0 bg-light py-2 px-3 d-flex justify-content-center">
+          <button type="button" class="btn btn-melidan-orange rounded-pill px-5 fw-bold" data-bs-dismiss="modal">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle & Controladores -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/db.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/app.js"></script>
+  <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>
+</body>
+</html>
+

@@ -1,0 +1,836 @@
+/**
+ * styles.css - Estilos del Portal Central, Autenticación y Vistas SPA (Melidan)
+ * Usa variables semánticas de base.css/dark-mode.css y Container Queries para PC + Móvil.
+ */
+
+/* ==========================================================================
+   Vistas de la Aplicación (SPA)
+   ========================================================================== */
+.view-screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+}
+
+.view-screen.active-screen {
+  display: flex;
+}
+
+/* ==========================================================================
+   1. Pantallas de Autenticación (Login, Registro y Recuperación)
+   ========================================================================== */
+.auth-content {
+  padding: 2.25rem 1.85rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.auth-content-wide {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 2.5rem;
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.05;
+}
+
+.brand-dot {
+  color: var(--melidan-orange);
+}
+
+.brand-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 0.45rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.auth-content .form-control-melidan,
+.auth-content .form-select.form-control-melidan {
+  min-height: 50px;
+  border-radius: 13px;
+  font-size: 0.98rem;
+}
+
+.auth-content .btn-melidan-orange {
+  min-height: 52px;
+  font-size: 1.02rem;
+  border-radius: 13px;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.link-melidan-orange {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+  margin-top: 1.15rem;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.link-melidan-orange:hover {
+  text-decoration: underline;
+  color: var(--melidan-orange-hover);
+}
+
+.link-melidan-teal {
+  color: var(--melidan-teal);
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: color 0.18s ease;
+}
+
+.link-melidan-teal:hover {
+  text-decoration: underline;
+  color: var(--melidan-teal-hover);
+}
+
+/* ==========================================================================
+   2. Panel de Administrador SPA
+   ========================================================================== */
+.admin-header {
+  padding: 1.25rem 1.25rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-header .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.admin-header .user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-header .user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.section-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+}
+
+.section-link {
+  color: var(--melidan-teal);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.metric-value {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.val-teal { color: var(--melidan-teal); }
+.val-orange { color: var(--melidan-orange); }
+.val-red { color: #EF4444; }
+.bg-teal { background-color: var(--melidan-teal) !important; }
+.text-teal { color: var(--melidan-teal) !important; }
+
+.order-monitoring-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.order-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.order-id-table,
+.order-price {
+  font-weight: 800;
+  font-size: 1.04rem;
+  color: var(--text-primary);
+}
+
+.order-footer-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.order-waiter-name {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.badge-status-ready {
+  background-color: #E6F8F3;
+  color: var(--melidan-teal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.32rem 0.72rem;
+  border-radius: 8px;
+}
+
+.badge-status-cooking {
+  background-color: #FFF2EA;
+  color: var(--melidan-orange);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.32rem 0.72rem;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   3. Gestión de Personal (SPA)
+   ========================================================================== */
+.staff-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem;
+  margin-bottom: 0.85rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.staff-card-deleted {
+  background: var(--bg-elevated);
+  border-color: var(--border-color);
+  opacity: 0.86;
+  position: relative;
+}
+
+.staff-card-deleted::before {
+  content: "Papelera (Soft Delete)";
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #DC3545;
+  background: #FFEBE9;
+  border: 1px solid #FFC1B8;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+}
+
+.staff-name-text {
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: var(--text-primary);
+}
+
+.staff-meta-text {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.18rem;
+}
+
+.badge-staff-active {
+  background-color: #E6F4EA;
+  color: #137333;
+  border: 1px solid #CEEAD6;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.badge-staff-inactive {
+  background-color: #FFF2EA;
+  color: var(--melidan-orange);
+  border: 1px solid #FFD8C2;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.badge-staff-softdeleted {
+  background-color: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #CBD5E1;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.badge-doc-pe {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.badge-doc-foreign {
+  background-color: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.btn-action-icon {
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.32rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-action-icon:hover {
+  background: var(--border-light);
+}
+
+/* ==========================================================================
+   4. Cocina KDS (Vista interna SPA)
+   ========================================================================== */
+.kds-view-container {
+  background-color: #0F172A;
+  color: #F8FAFC;
+  flex: 1;
+  padding-bottom: 1.5rem;
+}
+
+.kds-view-container .kds-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kds-badge-station {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F1F5F9;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.kds-time-text {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.kds-tabs-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem 1rem;
+  flex-wrap: wrap;
+}
+
+.kds-tab-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #CBD5E1;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.kds-tab-btn.active {
+  background-color: var(--melidan-teal);
+  color: #FFFFFF;
+}
+
+.kds-order-card {
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem;
+  margin: 0 1.25rem 1rem;
+}
+
+.kds-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kds-table-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.kds-card-time {
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.kds-dish-line {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.kds-dish-qty {
+  color: #34D399;
+  font-weight: 800;
+  margin-right: 0.4rem;
+}
+
+.kds-dish-note {
+  color: #FCA5A5;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.btn-kds-ready {
+  background-color: var(--melidan-teal);
+  color: #FFFFFF;
+  font-weight: 700;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+  transition: var(--transition);
+}
+
+.btn-kds-prepare {
+  background-color: #334155;
+  color: #F8FAFC;
+  font-weight: 700;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+  transition: var(--transition);
+}
+
+/* ==========================================================================
+   5. Carta Digital QR y Tracker
+   ========================================================================== */
+.table-pill-badge {
+  background-color: #FFF2EA;
+  color: var(--melidan-orange);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+}
+
+.search-input-box {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  height: 48px;
+  padding: 0 1rem 0 2.5rem;
+  width: 100%;
+  font-size: 0.94rem;
+  transition: var(--transition);
+}
+
+.search-input-box:focus {
+  outline: none;
+  border-color: var(--melidan-orange);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+}
+
+.category-pills-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0 1.25rem 1rem;
+  scrollbar-width: none;
+}
+
+.category-pills-row::-webkit-scrollbar {
+  display: none;
+}
+
+.category-pill {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.category-pill.active {
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  border-color: var(--melidan-orange);
+}
+
+.dish-item-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin: 0 1.25rem 0.85rem;
+  display: flex;
+  gap: 0.85rem;
+}
+
+.dish-img-thumb {
+  width: 82px;
+  height: 82px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dish-name-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.dish-desc-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dish-price-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--melidan-orange);
+}
+
+.btn-add-dish {
+  width: 38px;
+  height: 38px;
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cart-floating-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+  border-top: 1.5px solid var(--border-color);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.cart-count-pill {
+  background-color: var(--melidan-orange);
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+}
+
+.order-overview-card,
+.stepper-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.25rem;
+  margin: 0 1.25rem 1rem;
+}
+
+.stepper-step {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.15rem;
+}
+
+.stepper-step:last-child {
+  margin-bottom: 0.25rem;
+}
+
+.step-marker {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  width: 22px;
+  text-align: center;
+}
+
+.step-title {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.step-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+.btn-outline-dark-melidan {
+  height: 50px;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.98rem;
+  border-radius: 13px;
+  background: transparent;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  transition: var(--transition);
+}
+
+.btn-outline-dark-melidan:hover {
+  background: var(--text-primary);
+  color: var(--bg-surface);
+}
+
+/* ==========================================================================
+   Barra de Navegación Inferior y Indicador PostgreSQL
+   ========================================================================== */
+.app-bottom-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0.25rem;
+  z-index: 99;
+}
+
+.bottom-bar-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.bottom-bar-btn i {
+  font-size: 1.22rem;
+}
+
+.bottom-bar-btn.active {
+  color: var(--melidan-orange);
+}
+
+.dev-role-floater {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1020;
+}
+
+.db-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 0.28rem 0.68rem;
+  border-radius: 999px;
+  transition: var(--transition);
+}
+
+.db-status-badge.db-connected {
+  background-color: #E6F4EA;
+  color: #137333;
+  border: 1px solid #CEEAD6;
+}
+
+.db-status-badge.db-local {
+  background-color: #FEF7E0;
+  color: #B06000;
+  border: 1px solid #FEEFC3;
+}
+
+.badge-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #0F9D58;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(15, 157, 88, 0.25);
+  animation: pulse-dot 2s infinite;
+}
+
+.badge-dot-amber {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #F4B400;
+  display: inline-block;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 157, 88, 0.6); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(15, 157, 88, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 157, 88, 0); }
+}
+
+button:disabled,
+.btn:disabled,
+.btn-melidan-orange:disabled,
+.btn-melidan-teal:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none;
+  filter: grayscale(25%);
+}
+
+.invalid-feedback {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #EF4444;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   Adaptación Desktop vs Móvil (Container Queries para SPA)
+   ========================================================================== */
+@container melidan-shell (min-width: 700px) {
+  #menu-dishes-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0 1.25rem 1rem;
+    align-content: start;
+  }
+
+  #menu-dishes-container .dish-item-card {
+    margin: 0;
+  }
+
+  #staff-cards-container,
+  #admin-orders-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+
+  #staff-cards-container .staff-card,
+  #admin-orders-list .order-monitoring-card {
+    margin-bottom: 0;
+  }
+
+  #kds-orders-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 0 1.25rem;
+  }
+
+  #kds-orders-container .kds-order-card {
+    margin: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-content {
+    padding: 1.75rem 1.25rem 2rem;
+  }
+
+  .dev-role-floater {
+    bottom: 72px;
+    right: 12px;
+  }
+}
+

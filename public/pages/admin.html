@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FF5722">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Melidan - Panel de Administración</title>
+  <meta name="description" content="Panel de administración general y gestión de personal de Melidan.">
+
+  <!-- Controlador Anti-FOUC de Tema Oscuro y Vista Móvil -->
+  <script src="/js/theme.js"></script>
+
+  <!-- Fuentes Google: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Estilos Modulares -->
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
+</head>
+<body>
+
+  <!-- Contenedor Principal Expandido para Admin (Responsive PC + Móvil) -->
+  <main class="app-container app-container-wide">
+
+    <!-- Barra de Navegación Superior -->
+    <header class="melidan-navbar">
+      <div class="d-flex align-items-center gap-2">
+        <a href="/login" class="brand-logo">Melidan<span class="dot">.</span></a>
+        <span class="badge bg-dark text-white rounded-pill px-2 py-1 small ms-1">Administración</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <!-- Selector Rápido de Módulos (Accesible en PC y Móvil) -->
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-grid-fill"></i><span class="d-none d-sm-inline ms-1">Módulos</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li><a class="dropdown-item" href="/mozo.html"><i class="bi bi-grid-3x3-gap-fill text-success me-2"></i>Mozo (Mesas & Carta)</a></li>
+            <li><a class="dropdown-item" href="/cocina.html"><i class="bi bi-fire text-danger me-2"></i>Cocina (KDS)</a></li>
+            <li><a class="dropdown-item" href="/cajero.html"><i class="bi bi-cash-coin text-warning me-2"></i>Cajero (Caja & Facturación)</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="/login"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+          </ul>
+        </div>
+
+        <!-- Botón de Demostración Móvil en PC -->
+        <button type="button" class="viewport-toggle-btn" title="Demostración Responsive Móvil" aria-label="Demostración Responsive Móvil">
+          <i class="bi bi-phone"></i><span class="d-none d-md-inline ms-1 small">Móvil</span>
+        </button>
+
+        <!-- Botón de Modo Oscuro -->
+        <button type="button" class="theme-toggle-btn" title="Alternar Modo Oscuro" aria-label="Alternar Modo Oscuro">
+          <i class="bi bi-moon-stars-fill"></i><span class="d-none d-sm-inline ms-1 small">Oscuro</span>
+        </button>
+
+        <a href="/login" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </a>
+      </div>
+    </header>
+
+    <div class="p-3 p-md-4">
+      <!-- Encabezado de Bienvenida -->
+      <div class="admin-header">
+        <div>
+          <h2 class="fw-bold mb-1">Dashboard Ejecutivo</h2>
+          <p class="text-secondary small mb-0" id="admin-welcome-subtitle">Bienvenido, Don Roberto (Administración General)</p>
+        </div>
+        <div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold">
+            <i class="bi bi-database-check me-1"></i> PostgreSQL 18 Activo
+          </span>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Métricas Clave -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-orange"><i class="bi bi-currency-dollar"></i></div>
+          <div>
+            <div class="kpi-label">Ventas del Día</div>
+            <h3 class="kpi-value" id="stat-sales-today">S/ 0.00</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-teal"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+          <div>
+            <div class="kpi-label">Mesas Ocupadas</div>
+            <h3 class="kpi-value" id="stat-occupied-tables">0 / 15</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-blue"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="kpi-label">Personal Activo</div>
+            <h3 class="kpi-value" id="stat-active-staff">0</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-box kpi-icon-purple"><i class="bi bi-globe-americas"></i></div>
+          <div>
+            <div class="kpi-label">Extranjeros</div>
+            <h3 class="kpi-value" id="stat-foreign-staff">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accesos Directos a Operaciones -->
+      <div class="ops-shortcuts-grid">
+        <a href="/mozo.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
+          <div class="kpi-icon-box kpi-icon-teal"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Control de Mesas y Aforo</h6>
+            <small class="text-muted">15 mesas en tiempo real con tiempos de rotación</small>
+          </div>
+        </a>
+
+        <a href="/cocina.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
+          <div class="kpi-icon-box kpi-icon-orange"><i class="bi bi-fire"></i></div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Pantalla Cocina KDS</h6>
+            <small class="text-muted">Comandas activas, tiempos y preparación de platos</small>
+          </div>
+        </a>
+
+        <a href="/cajero.html" class="card text-decoration-none border shadow-sm p-3 h-100 d-flex flex-row align-items-center gap-3">
+          <div class="kpi-icon-box kpi-icon-blue"><i class="bi bi-receipt"></i></div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Caja y Facturación</h6>
+            <small class="text-muted">Emisión de boletas/facturas y cobro de mesas</small>
+          </div>
+        </a>
+      </div>
+
+      <!-- ====================================================================
+           MÓDULO DE GESTIÓN DE PERSONAL / USUARIOS (CRUD COMPLETO)
+           ==================================================================== -->
+      <div class="card border shadow-sm p-3 p-md-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div>
+            <h4 class="fw-bold mb-0">Gestión de Personal y Usuarios</h4>
+            <p class="text-muted small mb-0">CRUD con validación de peruanos y extranjeros y Borrado Lógico.</p>
+          </div>
+          <button class="btn btn-melidan-orange btn-sm" data-bs-toggle="modal" data-bs-target="#adminNewStaffModal">
+            <i class="bi bi-person-plus-fill me-1"></i> Registrar Empleado
+          </button>
+        </div>
+
+        <!-- Barra de Búsqueda, Filtros y Switch de Papelera -->
+        <div class="staff-toolbar">
+          <div class="staff-search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="admin-staff-search" class="form-control form-control-melidan" placeholder="Buscar por nombre, correo, documento o país...">
+          </div>
+
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="role-filter-pills">
+              <button class="role-pill active" data-role="todos">Todos</button>
+              <button class="role-pill" data-role="mozo">Mozos</button>
+              <button class="role-pill" data-role="cocina">Cocina</button>
+              <button class="role-pill" data-role="cajero">Caja</button>
+              <button class="role-pill" data-role="recepcionista">Recepción</button>
+              <button class="role-pill" data-role="administrador">Admin</button>
+              <button class="role-pill" data-role="cliente">Clientes</button>
+            </div>
+
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" id="toggle-deleted-staff">
+              <label class="form-check-label small fw-bold text-secondary" for="toggle-deleted-staff">
+                Mostrar Papelera (<span id="stat-trash-staff">0</span>)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Empleados / Usuarios -->
+        <div id="admin-staff-list" class="mt-2"></div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         MODALES: CREACIÓN, EDICIÓN, CONFIRMACIÓN Y ERRORES
+         ==================================================================== -->
+
+    <!-- Modal Registrar Empleado -->
+    <div class="modal fade" id="adminNewStaffModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Registrar Nuevo Empleado</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <form id="form-admin-new-staff">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label-melidan">Procedencia *</label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" name="admin-origin" id="admin-origin-pe" checked onchange="adminApp.handleOriginChange('nacional')">
+                  <label class="btn btn-outline-dark btn-sm fw-bold py-2" for="admin-origin-pe">🇵🇪 Nacional (Perú)</label>
+                  <input type="radio" class="btn-check" name="admin-origin" id="admin-origin-ext" onchange="adminApp.handleOriginChange('extranjero')">
+                  <label class="btn btn-outline-dark btn-sm fw-bold py-2" for="admin-origin-ext">🌍 Extranjero</label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="admin-new-name" class="form-label-melidan">Nombre Completo *</label>
+                <input type="text" id="admin-new-name" class="form-control form-control-melidan" required placeholder="Ej. Carlos Paredes">
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label for="admin-new-doc-type" class="form-label-melidan">Tipo Doc. *</label>
+                  <select id="admin-new-doc-type" class="form-select form-select-melidan">
+                    <option value="DNI" selected>DNI</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label for="admin-new-doc-number" class="form-label-melidan">Nº Documento *</label>
+                  <input type="text" id="admin-new-doc-number" class="form-control form-control-melidan" required placeholder="8 dígitos" maxlength="8">
+                </div>
+                <div class="col-12">
+                  <small id="admin-new-doc-help" class="text-muted" style="font-size: 0.72rem;">DNI: exactamente 8 números.</small>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label for="admin-new-nationality" class="form-label-melidan">Nacionalidad *</label>
+                  <input type="text" id="admin-new-nationality" class="form-control form-control-melidan" value="Peruana" required>
+                </div>
+                <div class="col-6">
+                  <label for="admin-new-phone" class="form-label-melidan">Teléfono *</label>
+                  <input type="text" id="admin-new-phone" class="form-control form-control-melidan" required placeholder="+51 987654321">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="admin-new-email" class="form-label-melidan">Correo Electrónico *</label>
+                <input type="email" id="admin-new-email" class="form-control form-control-melidan" required placeholder="empleado@melidan.com">
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label for="admin-new-role" class="form-label-melidan">Rol en el Restaurante *</label>
+                  <select id="admin-new-role" class="form-select form-select-melidan">
+                    <option value="mozo" selected>Mozo / Salón</option>
+                    <option value="cocina">Cocinero / Chef</option>
+                    <option value="cajero">Cajero / POS</option>
+                    <option value="recepcionista">Recepcionista</option>
+                    <option value="administrador">Administrador</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label for="admin-new-shift" class="form-label-melidan">Turno Asignado *</label>
+                  <select id="admin-new-shift" class="form-select form-select-melidan">
+                    <option value="Turno Mañana (8:00 AM - 4:00 PM)">Turno Mañana</option>
+                    <option value="Turno Tarde (4:00 PM - 12:00 AM)">Turno Tarde</option>
+                    <option value="Turno Rotativo">Turno Rotativo</option>
+                  </select>
+                </div>
+              </div>
+
+              <input type="hidden" id="admin-new-password" value="password123">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-melidan-orange btn-sm" id="btn-admin-submit-staff">Guardar en Base de Datos</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editar Usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Modificar Datos del Usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <form id="form-admin-edit-user">
+            <div class="modal-body">
+              <input type="hidden" id="edit-user-id">
+              <div class="mb-3">
+                <label class="form-label-melidan">Nombre Completo</label>
+                <input type="text" id="edit-user-name" class="form-control form-control-melidan" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label-melidan">Correo Electrónico</label>
+                <input type="email" id="edit-user-email" class="form-control form-control-melidan" required>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label-melidan">Teléfono</label>
+                  <input type="text" id="edit-user-phone" class="form-control form-control-melidan">
+                </div>
+                <div class="col-6">
+                  <label class="form-label-melidan">Rol</label>
+                  <select id="edit-user-role" class="form-select form-select-melidan">
+                    <option value="mozo">Mozo</option>
+                    <option value="cocina">Cocina</option>
+                    <option value="cajero">Cajero</option>
+                    <option value="recepcionista">Recepcionista</option>
+                    <option value="administrador">Administrador</option>
+                    <option value="cliente">Cliente</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-7">
+                  <label class="form-label-melidan">Turno</label>
+                  <input type="text" id="edit-user-shift" class="form-control form-control-melidan">
+                </div>
+                <div class="col-5">
+                  <label class="form-label-melidan">Estado</label>
+                  <select id="edit-user-status" class="form-select form-select-melidan">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-melidan-teal btn-sm">Actualizar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Confirmar Borrado Lógico -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger-subtle text-danger">
+            <h5 class="modal-title fw-bold"><i class="bi bi-shield-exclamation me-2"></i>Confirmar Borrado Lógico</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body text-center py-4">
+            <i class="bi bi-trash3 text-danger fs-1 mb-3 d-block"></i>
+            <h5 class="fw-bold">¿Archivar a <span id="delete-user-name-target" class="text-danger">este usuario</span>?</h5>
+            <p class="text-muted small px-3">
+              <strong>Protección de Integridad:</strong> Este registro <u>no se eliminará físicamente</u> de la base de datos para preservar el historial de comandas y pagos. Pasará a la papelera con estado Inactivo.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger btn-sm px-4 fw-bold" onclick="adminApp.confirmSoftDelete()">
+              Confirmar Archivado
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Error HTTP -->
+    <div class="modal fade" id="httpErrorModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title fw-bold" id="http-error-title">Error del Servidor</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body text-center py-4">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-2 d-block"></i>
+            <p id="http-error-message" class="fw-bold mb-0 text-dark">Ocurrió un error inesperado al conectar con PostgreSQL.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Entendido</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/db.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));</script>
+</body>
+</html>
+
