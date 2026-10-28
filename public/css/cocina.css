@@ -1,0 +1,186 @@
+/**
+ * cocina.css - Estilos Responsivos del Módulo Cocina / KDS (Melidan)
+ */
+
+.kds-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.kds-clock {
+  font-family: var(--font-heading);
+  font-size: 1.32rem;
+  font-weight: 800;
+  color: var(--melidan-orange);
+  font-variant-numeric: tabular-nums;
+}
+
+.station-filters {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  scrollbar-width: none;
+  align-items: center;
+}
+
+.station-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.station-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  padding: 0.42rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.station-btn:hover,
+.station-btn.active {
+  background: var(--melidan-orange);
+  color: #FFFFFF;
+  border-color: var(--melidan-orange);
+}
+
+/* Grilla de Comandas de Cocina */
+.kds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+@container melidan-shell (max-width: 520px) {
+  .kds-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
+.kds-ticket {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+.kds-ticket.urgente {
+  border-color: #EF4444;
+}
+
+.kds-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  background: rgba(15, 23, 42, 0.03);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.kds-mesa-badge {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.kds-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.26rem 0.68rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.kds-timer-badge.normal {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.kds-timer-badge.warning {
+  background: #FFF7ED;
+  color: #C2410C;
+}
+
+.kds-timer-badge.danger {
+  background: #FEF2F2;
+  color: #B91C1C;
+  animation: pulseWarning 1.6s infinite ease-in-out;
+}
+
+@keyframes pulseWarning {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.84; transform: scale(1.03); }
+}
+
+.kds-ticket-body {
+  padding: 1rem;
+  flex: 1;
+}
+
+.kds-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.kds-item-row:last-child {
+  border-bottom: none;
+}
+
+.kds-item-qty {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--melidan-orange);
+  min-width: 28px;
+}
+
+.kds-item-name {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.kds-item-notes {
+  font-size: 0.78rem;
+  color: #EA580C;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+.kds-ticket-footer {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.02);
+}
+

@@ -27,6 +27,7 @@ DROP TYPE IF EXISTS tipo_comprobante_enum CASCADE;
 
 -- Creación de tipos ENUM nativos
 CREATE TYPE rol_usuario AS ENUM ('administrador', 'mozo', 'cajero', 'cocina');
+CREATE TYPE rol_usuario AS ENUM ('administrador', 'mozo', 'cajero', 'cocina', 'cliente');
 CREATE TYPE estado_mesa AS ENUM ('disponible', 'ocupada', 'reservada');
 CREATE TYPE tipo_coccion_enum AS ENUM ('fuego_lento', 'horno_artesanal', 'estandar');
 CREATE TYPE estado_pedido AS ENUM ('pendiente', 'en_cocina', 'listo', 'entregado', 'cancelado');
@@ -51,6 +52,7 @@ CREATE TABLE restaurante_info (
 
 -- ============================================================
 -- 3. TABLA: Usuarios y Autenticación
+-- 3. TABLA: Usuarios y Autenticación (con soporte para Extranjeros y Soft Delete)
 -- ============================================================
 CREATE TABLE usuarios (
     id_usuario SERIAL PRIMARY KEY,
@@ -62,6 +64,17 @@ CREATE TABLE usuarios (
     estado VARCHAR(20) DEFAULT 'Activo',
     avatar VARCHAR(255) DEFAULT 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     fecha_creacion TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    tipo_documento VARCHAR(25) NOT NULL DEFAULT 'DNI', -- 'DNI', 'Pasaporte', 'Carnet_Extranjeria'
+    numero_documento VARCHAR(30),
+    nacionalidad VARCHAR(50) DEFAULT 'Peruana',
+    telefono VARCHAR(25),
+    turno VARCHAR(100) DEFAULT 'Turno Mañana (8:00 AM - 4:00 PM)',
+    estado VARCHAR(20) DEFAULT 'Activo',
+    avatar VARCHAR(255) DEFAULT 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+    is_deleted BOOLEAN DEFAULT FALSE, -- Borrado Lógico (Soft Delete: los datos no se eliminan físicamente)
+    fecha_eliminacion TIMESTAMPTZ NULL,
+    fecha_creacion TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
@@ -80,6 +93,7 @@ CREATE TABLE recuperacion_claves (
 
 -- ============================================================
 -- 5. TABLA: Mesas y Códigos QR
+-- 5. TABLA: Mesas y Códigos QR (Control de Mesas y Aforo)
 -- ============================================================
 CREATE TABLE mesas (
     id_mesa SERIAL PRIMARY KEY,
@@ -87,6 +101,11 @@ CREATE TABLE mesas (
     codigo_qr VARCHAR(255) UNIQUE NOT NULL,
     capacidad INT DEFAULT 4 CHECK (capacidad > 0),
     estado estado_mesa DEFAULT 'disponible'
+    estado VARCHAR(25) NOT NULL DEFAULT 'libre', -- 'libre', 'ocupada', 'por_limpiar', 'cuenta'
+    tiempo_min INT DEFAULT 0,
+    mozo_asignado VARCHAR(100) DEFAULT '-',
+    monto_acumulado NUMERIC(10, 2) DEFAULT 0.00,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 
 -- ============================================================
@@ -199,6 +218,33 @@ INSERT INTO mesas (numero_mesa, codigo_qr, capacidad, estado) VALUES
 (3, 'QR_MESA_03_MELIDAN', 4, 'disponible'),
 (4, 'QR_MESA_04_MELIDAN', 4, 'ocupada'),
 (5, 'QR_MESA_05_MELIDAN', 6, 'disponible');
+-- 2. Usuarios (Nacionales y Extranjeros)
+INSERT INTO usuarios (nombre, email, password_hash, rol, tipo_documento, numero_documento, nacionalidad, telefono, turno, estado, avatar, is_deleted) VALUES
+('Don Roberto', 'admin@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'administrador', 'DNI', '45892104', 'Peruana', '+51 987654321', 'Turno Completo / Gerencia', 'Activo', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80', FALSE),
+('Marco Antonio (Chef)', 'chef@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'cocina', 'DNI', '70124589', 'Peruana', '+51 984512365', 'Turno Mañana (7:00 AM - 3:00 PM)', 'Activo', 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=150&q=80', FALSE),
+('Carlos Paredes', 'carlos.p@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'mozo', 'DNI', '74589632', 'Peruana', '+51 978451236', 'Turno Mañana (8:00 AM - 4:00 PM)', 'Activo', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80', FALSE),
+('María Salazar', 'maria.s@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'mozo', 'DNI', '76123458', 'Peruana', '+51 965412879', 'Turno Tarde (4:00 PM - 12:00 AM)', 'Activo', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80', FALSE),
+('Jorge Ruiz', 'jorge.r@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'mozo', 'DNI', '48596123', 'Peruana', '+51 951478236', 'Turno Rotativo', 'Inactivo', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80', FALSE),
+('Jean-Pierre Dubois', 'jean.dubois@melidan.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'mozo', 'Carnet_Extranjeria', 'CE009874123', 'Francesa', '+33 612345678', 'Turno Tarde (4:00 PM - 12:00 AM)', 'Activo', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80', FALSE),
+('Sarah Jenkins', 'sarah.j@gmail.com', '$2y$12$cS6vyppok5E9eXWF0xXu6.0sUnnINo1JBho9M2BddNUIH6J8d6zGy', 'cliente', 'Pasaporte', 'PAS9845123A', 'Estadounidense', '+1 4155552671', 'Cliente', 'Activo', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80', FALSE);
+
+-- 3. Mesas (15 Mesas listas y funcionales en estado Libre para asignación de salón)
+INSERT INTO mesas (numero_mesa, codigo_qr, capacidad, estado, tiempo_min, mozo_asignado, monto_acumulado) VALUES
+(1, 'QR_MESA_01_MELIDAN', 4, 'libre', 0, '-', 0.00),
+(2, 'QR_MESA_02_MELIDAN', 3, 'libre', 0, '-', 0.00),
+(3, 'QR_MESA_03_MELIDAN', 2, 'libre', 0, '-', 0.00),
+(4, 'QR_MESA_04_MELIDAN', 2, 'libre', 0, '-', 0.00),
+(5, 'QR_MESA_05_MELIDAN', 4, 'libre', 0, '-', 0.00),
+(6, 'QR_MESA_06_MELIDAN', 6, 'libre', 0, '-', 0.00),
+(7, 'QR_MESA_07_MELIDAN', 2, 'libre', 0, '-', 0.00),
+(8, 'QR_MESA_08_MELIDAN', 4, 'libre', 0, '-', 0.00),
+(9, 'QR_MESA_09_MELIDAN', 4, 'libre', 0, '-', 0.00),
+(10, 'QR_MESA_10_MELIDAN', 5, 'libre', 0, '-', 0.00),
+(11, 'QR_MESA_11_MELIDAN', 2, 'libre', 0, '-', 0.00),
+(12, 'QR_MESA_12_MELIDAN', 2, 'libre', 0, '-', 0.00),
+(13, 'QR_MESA_13_MELIDAN', 4, 'libre', 0, '-', 0.00),
+(14, 'QR_MESA_14_MELIDAN', 6, 'libre', 0, '-', 0.00),
+(15, 'QR_MESA_15_MELIDAN', 4, 'libre', 0, '-', 0.00);
 
 -- 4. Categorías
 INSERT INTO categorias (id_categoria, nombre, descripcion) VALUES

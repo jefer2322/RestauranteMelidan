@@ -1,0 +1,152 @@
+/**
+ * cajero.css - Estilos Responsivos del Módulo Cajero y Facturación Electrónica (Melidan)
+ */
+
+.pos-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  padding: 1.35rem;
+  align-items: start;
+}
+
+@container melidan-shell (max-width: 760px) {
+  .pos-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1.15rem;
+  }
+}
+
+.pending-bills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.bill-card-item {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  transition: var(--transition);
+}
+
+.bill-card-item:hover,
+.bill-card-item.selected {
+  border-color: var(--melidan-orange);
+  background: rgba(255, 87, 34, 0.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.bill-card-item.bill-solicitada {
+  border-left: 5px solid #EF4444;
+}
+
+.bill-total-amount {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.checkout-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 4.8rem;
+}
+
+@container melidan-shell (max-width: 760px) {
+  .checkout-panel {
+    position: static;
+    padding: 1.1rem;
+  }
+}
+
+.ticket-breakdown {
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.ticket-row.total-row {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--melidan-orange);
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  margin: 0.85rem 0 1rem;
+}
+
+@container melidan-shell (max-width: 360px) {
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-method-btn {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  transition: var(--transition);
+}
+
+.payment-method-btn i {
+  font-size: 1.35rem;
+}
+
+.payment-method-btn:hover,
+.payment-method-btn.active {
+  border-color: var(--melidan-teal);
+  background: rgba(0, 155, 119, 0.1);
+  color: var(--melidan-teal);
+}
+
+.change-calculator-box {
+  background: rgba(15, 23, 42, 0.025);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.text-melidan-orange {
+  color: var(--melidan-orange) !important;
+}
+

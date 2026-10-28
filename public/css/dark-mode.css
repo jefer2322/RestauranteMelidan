@@ -1,0 +1,443 @@
+/**
+ * dark-mode.css - Modo Oscuro Completo y Tipografía Optimizada (Anti-Halación) para Melidan
+ * Activado mediante [data-theme="dark"] en <html> (sincronizado con data-bs-theme="dark").
+ */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-body: #080C14;
+  --bg-surface: #0F172A;
+  --bg-elevated: #162032;
+  --bg-card: #1E293B;
+  --bg-input: #151F30;
+  --border-color: #334155;
+  --border-light: #1E293B;
+
+  /* Paleta tipográfica calibrada para evitar fatiga visual y efecto halación en fondo oscuro */
+  --text-primary: #F1F5F9;
+  --text-dark: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.65);
+}
+
+/* ==========================================================================
+   Tipografía y Legibilidad en Modo Oscuro
+   ========================================================================== */
+[data-theme="dark"] body {
+  background-color: var(--bg-body);
+  background-image:
+    radial-gradient(circle at 15% 12%, rgba(255, 87, 34, 0.09), transparent 38%),
+    radial-gradient(circle at 85% 88%, rgba(0, 155, 119, 0.08), transparent 40%);
+  color: var(--text-primary);
+  letter-spacing: 0.008em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .brand-title,
+[data-theme="dark"] .brand-logo,
+[data-theme="dark"] .section-heading,
+[data-theme="dark"] .tables-header-title {
+  color: #F8FAFC;
+  letter-spacing: -0.015em;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] label,
+[data-theme="dark"] .brand-subtitle,
+[data-theme="dark"] .tables-header-subtitle,
+[data-theme="dark"] .step-desc,
+[data-theme="dark"] .dish-desc-text {
+  color: var(--text-secondary);
+}
+
+/* Corrección integral de utilidades Bootstrap de texto en fondo oscuro */
+[data-theme="dark"] .text-dark:not(.badge):not(.bg-warning):not(.bg-info) {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge.bg-warning.text-dark,
+[data-theme="dark"] .badge.bg-info.text-dark {
+  color: #0F172A !important;
+}
+
+[data-theme="dark"] .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* ==========================================================================
+   Superficies, Contenedores, Bordes y Fondos Bootstrap
+   ========================================================================== */
+[data-theme="dark"] .app-container,
+[data-theme="dark"] .app-container-wide {
+  background-color: var(--bg-surface);
+  border-color: var(--border-color);
+}
+
+@media (min-width: 768px) {
+  html[data-theme="dark"][data-viewport="mobile"] .app-container,
+  html[data-theme="dark"][data-viewport="mobile"] .app-container-wide {
+    border-color: #334155 !important;
+    box-shadow: 0 28px 65px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(148, 163, 184, 0.2) !important;
+  }
+}
+
+[data-theme="dark"] .melidan-navbar,
+[data-theme="dark"] .kds-header,
+[data-theme="dark"] .station-filters,
+[data-theme="dark"] .app-bottom-bar,
+[data-theme="dark"] .cart-floating-bar {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .bg-light-subtle {
+  background-color: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-start,
+[data-theme="dark"] .border-end {
+  border-color: var(--border-color) !important;
+}
+
+/* ==========================================================================
+   Tarjetas Operativas en Todos los Módulos
+   ========================================================================== */
+[data-theme="dark"] .card,
+[data-theme="dark"] .kpi-card,
+[data-theme="dark"] .metric-card,
+[data-theme="dark"] .order-monitoring-card,
+[data-theme="dark"] .staff-card,
+[data-theme="dark"] .staff-card-item,
+[data-theme="dark"] .dish-item-card,
+[data-theme="dark"] .menu-item-card,
+[data-theme="dark"] .order-overview-card,
+[data-theme="dark"] .stepper-card,
+[data-theme="dark"] .kds-ticket,
+[data-theme="dark"] .bill-card-item,
+[data-theme="dark"] .checkout-panel {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .staff-card-deleted,
+[data-theme="dark"] .staff-card-item.soft-deleted {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+[data-theme="dark"] .staff-card-deleted::before {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #FCA5A5;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .bill-card-item:hover,
+[data-theme="dark"] .bill-card-item.selected {
+  background-color: rgba(255, 87, 34, 0.12) !important;
+  border-color: var(--melidan-orange) !important;
+}
+
+[data-theme="dark"] .kds-ticket-header,
+[data-theme="dark"] .kds-ticket-footer,
+[data-theme="dark"] .change-calculator-box {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* ==========================================================================
+   Formularios, Inputs, Prefijos y Autofill de Google Chrome
+   ========================================================================== */
+[data-theme="dark"] .form-label-melidan,
+[data-theme="dark"] .form-label {
+  color: #E2E8F0;
+}
+
+[data-theme="dark"] .form-control-melidan,
+[data-theme="dark"] .form-select-melidan,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .search-input-box {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .form-control-melidan::placeholder,
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] .search-input-box::placeholder {
+  color: #64748B !important;
+}
+
+[data-theme="dark"] .form-control-melidan:focus,
+[data-theme="dark"] .form-select-melidan:focus,
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .search-input-box:focus {
+  background-color: #1A263B !important;
+  border-color: var(--melidan-orange) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 0 3.5px rgba(255, 87, 34, 0.22) !important;
+}
+
+[data-theme="dark"] .input-group-text {
+  background-color: #1E293B !important;
+  border-color: var(--border-color) !important;
+  color: #CBD5E1 !important;
+}
+
+/* Evitar cajas blancas/amarillas de autocompletado de Chrome en modo oscuro */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #F8FAFC !important;
+  -webkit-box-shadow: 0 0 0 1000px #151F30 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ==========================================================================
+   Botones, Radios, Filtros y Controles Interactivos
+   ========================================================================== */
+[data-theme="dark"] .theme-toggle-btn,
+[data-theme="dark"] .viewport-toggle-btn {
+  background-color: #1E293B;
+  border-color: #475569;
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover,
+[data-theme="dark"] .viewport-toggle-btn:hover {
+  background-color: #334155;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .viewport-toggle-btn.is-mobile-active {
+  background-color: rgba(255, 87, 34, 0.2);
+  border-color: var(--melidan-orange);
+  color: #FF8A65;
+}
+
+[data-theme="dark"] .btn-outline-dark,
+[data-theme="dark"] .btn-outline-dark-melidan,
+[data-theme="dark"] .btn-melidan-outline,
+[data-theme="dark"] .btn-outline-secondary,
+[data-theme="dark"] .btn-action-icon {
+  background-color: rgba(30, 41, 59, 0.65);
+  border-color: #475569 !important;
+  color: #E2E8F0 !important;
+}
+
+[data-theme="dark"] .btn-outline-dark:hover,
+[data-theme="dark"] .btn-outline-dark-melidan:hover,
+[data-theme="dark"] .btn-melidan-outline:hover,
+[data-theme="dark"] .btn-outline-secondary:hover,
+[data-theme="dark"] .btn-action-icon:hover {
+  background-color: #334155 !important;
+  border-color: #64748B !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .btn-check:checked + .btn-outline-dark {
+  background-color: var(--melidan-orange) !important;
+  border-color: var(--melidan-orange) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+[data-theme="dark"] .btn-outline-warning.text-dark {
+  color: #FBBF24 !important;
+  border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+[data-theme="dark"] .btn-outline-warning.text-dark:hover {
+  background-color: rgba(251, 191, 36, 0.16) !important;
+  color: #FDE68A !important;
+}
+
+[data-theme="dark"] .category-pill,
+[data-theme="dark"] .role-pill,
+[data-theme="dark"] .station-btn,
+[data-theme="dark"] .payment-method-btn {
+  background-color: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+
+[data-theme="dark"] .category-pill:hover,
+[data-theme="dark"] .role-pill:hover,
+[data-theme="dark"] .station-btn:hover {
+  background-color: #293548;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .category-pill.active,
+[data-theme="dark"] .role-pill.active,
+[data-theme="dark"] .station-btn.active {
+  background-color: var(--melidan-orange);
+  border-color: var(--melidan-orange);
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .payment-method-btn.active,
+[data-theme="dark"] .payment-method-btn:hover {
+  background-color: rgba(0, 155, 119, 0.18);
+  border-color: #10B981;
+  color: #6EE7B7;
+}
+
+[data-theme="dark"] .bottom-bar-btn {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .bottom-bar-btn.active {
+  color: #FF7043;
+}
+
+/* ==========================================================================
+   Badges, Estados de Mesas y Temporizadores de Alto Contraste
+   ========================================================================== */
+[data-theme="dark"] .db-status-badge.db-connected {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #6EE7B7;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="dark"] .db-status-badge.db-local {
+  background-color: rgba(245, 158, 11, 0.16);
+  color: #FCD34D;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="dark"] .badge-status-ready,
+[data-theme="dark"] .badge-staff-active,
+[data-theme="dark"] .kds-timer-badge.normal {
+  background-color: rgba(16, 185, 129, 0.16);
+  color: #6EE7B7;
+  border: 1px solid rgba(16, 185, 129, 0.32);
+}
+
+[data-theme="dark"] .badge-status-cooking,
+[data-theme="dark"] .badge-staff-inactive,
+[data-theme="dark"] .table-pill-badge,
+[data-theme="dark"] .kds-timer-badge.warning {
+  background-color: rgba(255, 87, 34, 0.18);
+  color: #FFAB91;
+  border: 1px solid rgba(255, 87, 34, 0.35);
+}
+
+[data-theme="dark"] .kds-timer-badge.danger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .badge-staff-softdeleted,
+[data-theme="dark"] .badge-doc-pe {
+  background-color: #0F172A;
+  color: #CBD5E1;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .badge-doc-foreign {
+  background-color: rgba(56, 189, 248, 0.15);
+  color: #7DD3FC;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+/* 4 Estados de las 15 Mesas en Modo Oscuro */
+[data-theme="dark"] .table-node.status-free,
+[data-theme="dark"] .table-node.status-libre {
+  background: linear-gradient(145deg, rgba(6, 78, 59, 0.65), rgba(6, 95, 70, 0.42));
+  border-color: #10B981;
+  color: #A7F3D0;
+}
+
+[data-theme="dark"] .table-node.status-occupied,
+[data-theme="dark"] .table-node.status-ocupada {
+  background: linear-gradient(145deg, rgba(124, 45, 18, 0.7), rgba(154, 52, 18, 0.45));
+  border-color: #F97316;
+  color: #FFEDD5;
+}
+
+[data-theme="dark"] .table-node.status-cleaning,
+[data-theme="dark"] .table-node.status-por_limpiar {
+  background: linear-gradient(145deg, rgba(30, 58, 138, 0.7), rgba(29, 78, 216, 0.42));
+  border-color: #3B82F6;
+  color: #DBEAFE;
+}
+
+[data-theme="dark"] .table-node.status-bill,
+[data-theme="dark"] .table-node.status-cuenta {
+  background: linear-gradient(145deg, rgba(127, 29, 29, 0.72), rgba(153, 27, 27, 0.48));
+  border-color: #EF4444;
+  color: #FEE2E2;
+}
+
+/* ==========================================================================
+   Modales, Dropdowns y Notificaciones en Modo Oscuro
+   ========================================================================== */
+[data-theme="dark"] .modal-content {
+  background-color: #131C2E;
+  border: 1px solid #334155;
+  color: var(--text-primary);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-menu {
+  background-color: #162032;
+  border: 1px solid #334155;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: #E2E8F0;
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+  background-color: #243247;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .dropdown-divider {
+  border-top-color: #334155;
+}
+
+[data-theme="dark"] .toast-melidan {
+  background-color: #1E293B;
+  border: 1px solid #475569;
+  color: #F8FAFC;
+}
+
